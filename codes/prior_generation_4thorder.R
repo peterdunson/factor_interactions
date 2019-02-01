@@ -1,7 +1,7 @@
 ### Generate distribution from the prior up to 4-th order interactions
 library(MCMCpack)
 
-
+# cacca prova
 S = 10000
 k = 5
 p = 10
