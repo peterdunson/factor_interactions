@@ -13,7 +13,7 @@ library(RCurl)
 library(stargazer)
 library(R.utils)
 sourceDirectory("~/Desktop/Code_factor_simulations/Functions")
-
+# cacca
 #p = 10, k = 8, delta = 0.015
 
 S = 10
