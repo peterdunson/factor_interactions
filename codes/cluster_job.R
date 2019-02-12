@@ -53,7 +53,7 @@ if(type_model == 0){
 
 
 
-
+### if directory results does not exist, create it
 
 
 
