@@ -1,4 +1,4 @@
-generate_indep_model_notsparse = function(p = 10,n = 100){
+generate_indep_model_notsparse = function(p = 10,n = 100, k_true = NULL){
    
    # generate X
    X = matrix(rnorm(n*p,0,1),n,p)

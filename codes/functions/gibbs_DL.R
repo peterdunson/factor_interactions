@@ -96,7 +96,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
          
          if (logr > logu){
             eta[h,] = eta_star
-            if(h>burn){
+            if(i>burn){
                acp[h] = acp[h] + 1
             }
          }
@@ -186,13 +186,22 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
          alpha_bayes[count] = tr(Psi%*%V_n)
          count = count + 1
       }
+      
+      if (i%%100==0){
+         #print(paste("time for last 100 iterations:",round(as.numeric(Sys.time()-t),0),
+         #            "seconds",sep=" "))
+         #t = Sys.time()
+         #print(paste(i,"out of",nrun,sep=" "))
+         #t_end = round(((as.numeric(difftime(Sys.time(),t0,units="secs")))/i)*(nrun-i),0)
+         #print(paste("estimated time to end:",t_end,"seconds",sep=" "))
+      }
    }
    
    beta_bayes = beta_bayes%*%diag(sqrt(VX))
    return(list(alpha_bayes = alpha_bayes,
                beta_bayes = beta_bayes,
                Omega_bayes = Omega_bayes,
-               acp = acp,
+               acp = acp/(nrun-burn),
                tau = tau_st,
                sigmasq_st = sigmasq_st))
 }
