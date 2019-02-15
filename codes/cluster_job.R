@@ -18,9 +18,9 @@ library(GIGrvg)
 
 ##### Source Functions from local git repo #####
 # git clone https://github.com/fedfer/factor_interactions.git
-sourceDirectory("/factor_interactions/codes/functions")
-sourceDirectory("/factor_interactions/codes/generate_data")
-sourceDirectory("/factor_interactions/codes/post_processing")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
