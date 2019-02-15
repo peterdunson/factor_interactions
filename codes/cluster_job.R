@@ -85,7 +85,7 @@ for(s in 1:S){
    while(acp_mean > 0.3 | acp_mean < 0.2){
       if(acp_mean > 0.3){
          delta_05 = delta_05*2
-      }else if(acp_mean < 0.1){
+      }else if(acp_mean < 0.2){
          delta_05 = delta_05*2/3
       }
       gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
@@ -95,6 +95,11 @@ for(s in 1:S){
       print(acp_mean)
    }
    
+   if(s == 1){
+      delta_k = delta_10 = delta_50 = delta_05
+   }
+   
+   
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
                           a = floor(log(p)*3), k = NULL)
@@ -102,7 +107,7 @@ for(s in 1:S){
    while(acp_mean > 0.3 | acp_mean < 0.2){
       if(acp_mean > 0.3){
          delta_k = delta_k*2
-      }else if(acp_mean < 0.1){
+      }else if(acp_mean < 0.2){
          delta_k = delta_k*2/3
       }
       gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
@@ -122,7 +127,7 @@ for(s in 1:S){
    while(acp_mean > 0.3 | acp_mean < 0.2){
       if(acp_mean > 0.3){
          delta_10 = delta_10*2
-      }else if(acp_mean < 0.1){
+      }else if(acp_mean < 0.2){
          delta_10 = delta_10*2/3
       }
       gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
@@ -141,7 +146,7 @@ for(s in 1:S){
    while(acp_mean > 0.3 | acp_mean < 0.2){
       if(acp_mean > 0.3){
          delta_50 = delta_50*2
-      }else if(acp_mean < 0.1){
+      }else if(acp_mean < 0.2){
          delta_50 = delta_50*2/3
       }
       gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
