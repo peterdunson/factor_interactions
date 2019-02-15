@@ -16,11 +16,17 @@ library(stargazer)
 library(R.utils)
 library(GIGrvg)
 
+suppressMessages(library(hierNet))
+
+
 ##### Source Functions from local git repo #####
 # git clone https://github.com/fedfer/factor_interactions.git
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
+sourceDirectory("~/factor_interactions/codes/functions")
+sourceDirectory("~/factor_interactions/codes/generate_data")
+sourceDirectory("~/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
@@ -166,8 +172,8 @@ for(s in 1:S){
    acp_min[s,4] = min(acp_4/(nrun-burn));acp_max[s,4] = max(acp_4/(nrun-burn));acp_mean_st[s,4] = mean(acp_4/(nrun-burn))
    
    # Competitors
-   hiernet = Hiernet_fct(y, X, X_test, y_test)
-   Family = FAMILY_fct(y, X, X_test, y_test)
+   invisible(capture.output(hiernet = Hiernet_fct(y, X, X_test, y_test)))
+   invisible(capture.output(Family = FAMILY_fct(y, X, X_test, y_test)))
    PIE = PIE_fct(y, X, X_test, y_test)
    RAMP = RAMP_fct(y, X, X_test, y_test)
    
