@@ -32,12 +32,12 @@ if (length(args)==0) {
    stop("At least one argument must be supplied", call.=FALSE)
 }
 
-n = args[1]; p = args[2]
+n = as.numeric(args[1]); p = as.numeric(args[2])
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = args[3]; sparse = args[4]
+type_model = as.numeric(args[3]); sparse = as.numeric(args[4])
 # number of true factors in correlated model
-k_true = args[5]
+k_true = as.numeric(args[5])
 
 if(type_model == 0){
    if(sparse == 0){
