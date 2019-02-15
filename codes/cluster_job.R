@@ -109,6 +109,7 @@ for(s in 1:S){
                              delta_rw = delta_k, epsilon_rw = 0.5,
                              a = floor(log(p)*3), k = NULL)
       acp_mean = mean(gibbs_DL_k$acp)
+      print(acp_mean)
    }
    
    
@@ -129,6 +130,7 @@ for(s in 1:S){
                                  k = NULL, alpha_prior = p*floor(log(p)*3)/10,
                                  theta_inf = 0.05)
       acp_mean = mean(gibbs_CUSP_10$acp)
+      print(acp_mean)
    }
    
    gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
@@ -147,6 +149,7 @@ for(s in 1:S){
                                 k = NULL, alpha_prior = p*floor(log(p)*3)/2,
                                 theta_inf = 0.05)
       acp_mean = mean(gibbs_CUSP_50$acp)
+      print(acp_mean)
    }
 
    
