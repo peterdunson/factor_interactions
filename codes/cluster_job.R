@@ -21,6 +21,7 @@ library(GIGrvg)
 sourceDirectory("~/factor_interactions/codes/functions")
 sourceDirectory("~/factor_interactions/codes/generate_data")
 sourceDirectory("~/factor_interactions/codes/post_processing")
+exists("generate_indep_model_notsparse")
 
 
 
@@ -40,7 +41,7 @@ k_true = args[5]
 
 if(type_model == 0){
    if(sparse == 0){
-      data_gen = generate_indep_model_sparse
+      data_gen = generate_indep_model_notsparse
       out_name = paste("n",n,"_p",p,"_ind","_notsparse",sep="")
    }else if(sparse == 1){
       data_gen = generate_indep_model_sparse
