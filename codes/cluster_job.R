@@ -228,7 +228,7 @@ list_res = list(
    acp_max = acp_max
 )
 
-results_dir = file.path("/work/sta790/ff31/results")
+results_dir = file.path("/work/sta790/ff31/results_fact")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 saveRDS(list_res, file.path(results_dir, out_name))
 #readRDS("results/n100_p10_ind_notsparse")
