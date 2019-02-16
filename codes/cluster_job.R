@@ -64,7 +64,7 @@ if(type_model == 0){
 }
 
 
-S = 10
+S = 100
 err = err_pred = FR = err_beta = matrix(0,ncol = 8, nrow = S)
 alpha = 0.05
 TP_main = TN_main = TP_int = TN_int = matrix(0,ncol = 8, nrow = S)
