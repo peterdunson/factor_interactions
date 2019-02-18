@@ -62,7 +62,7 @@ if(type_model == 0){
 }
 
 
-S = 2
+S = 100
 err = err_pred = FR = err_beta = matrix(0,ncol = 8, nrow = S)
 alpha = 0.05
 TP_main = TN_main = TP_int = TN_int = matrix(0,ncol = 8, nrow = S)
@@ -79,7 +79,7 @@ for(s in 1:S){
    p = ncol(X)
    
    #Factor models
-   nrun = 150; burn = 100; thin = 10; 
+   nrun = 15000; burn = 10000; thin = 10; 
    
    
    gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
