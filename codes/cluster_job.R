@@ -46,23 +46,23 @@ k_true = as.numeric(args[5])
 if(type_model == 0){
    if(sparse == 0){
       data_gen = generate_indep_model_notsparse
-      out_name = paste("n",n,"_p",p,"_ind","_notsparse",sep="")
+      out_name = paste("n",n,"_p",p,"_ind","_notsparse.rds",sep="")
    }else if(sparse == 1){
       data_gen = generate_indep_model_sparse
-      out_name = paste("n",n,"_p",p,"_ind","_sparse",sep="")
+      out_name = paste("n",n,"_p",p,"_ind","_sparse.rds",sep="")
    }
 }else if(type_model == 1){
    if(sparse == 0){
       data_gen = generate_corr_model_notsparse
-      out_name = paste("n",n,"_p",p,"_corr","_notsparse",sep="")
+      out_name = paste("n",n,"_p",p,"_corr","_notsparse.rds",sep="")
    }else if (sparse == 1){
       data_gen = generate_corr_model_sparse
-      out_name = paste("n",n,"_p",p,"_corr","_sparse",sep="")
+      out_name = paste("n",n,"_p",p,"_corr","_sparse.rds",sep="")
    }
 }
 
 
-S = 100
+S = 1
 err = err_pred = FR = err_beta = matrix(0,ncol = 8, nrow = S)
 alpha = 0.05
 TP_main = TN_main = TP_int = TN_int = matrix(0,ncol = 8, nrow = S)
