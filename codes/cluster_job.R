@@ -79,7 +79,7 @@ for(s in 1:S){
    p = ncol(X)
    
    #Factor models
-   nrun = 15000; burn = 10000; thin = 10; 
+   nrun = 3000; burn = 2000; thin = 5; 
    
    
    gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
