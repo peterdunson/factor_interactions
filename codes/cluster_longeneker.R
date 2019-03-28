@@ -1,28 +1,30 @@
-######## CLUSTER JOB ####### 
-#### Load all the libraries
-library(BayesLogit)
-library(MASS)
-library(fields)
+#### Load Libraries #####
 library(mvtnorm)
-library(microbenchmark)
-library(R.utils)
+library(MASS)
+library(beepr)
 library(psych)
-library(hierNet)
-library(bkmr)
-library(FAMILY)
-library(PIE)
-library(tidyverse)
-library(glmnet)
+library(bayesSurv)
+library('PIE')
+library('glmnet')
 library(RAMP)
-
+library(hierNet)
+library(FAMILY)
+library(RCurl)
+library(stargazer)
+library(R.utils)
+library(GIGrvg)
 
 ##### Source Functions from local git repo #####
 # git clone https://github.com/fedfer/gp.git
 # git pull when in the folder
-sourceDirectory("/work/sta790/ff31/gp/functions")
-sourceDirectory("~/gp/functions")
-sourceDirectory("/work/sta790/ff31/gp/generate_data")
-sourceDirectory("~/gp/generate_data")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
+sourceDirectory("~/factor_interactions/codes/functions")
+sourceDirectory("~/factor_interactions/codes/generate_data")
+sourceDirectory("~/factor_interactions/codes/post_processing")
+exists("generate_indep_model_notsparse")
+
 
 
 ##### Argument of R script ######
@@ -36,11 +38,11 @@ thin = as.numeric(args[3]);
 
 ###### Read Data from local git repo ##### 
 #cluster
-df_chem = read.table("/work/sta790/ff31/gp/data/finaldde2.txt",
+df_chem = read.table("/work/sta790/ff31/factor_interactions/data/finaldde2.txt",
                      header = T,sep = ",",na.strings = ".")
 #local macbook
 if (!exists("df_chem")){
-   df_chem = read.table("~/gp/data/finaldde2.txt",
+   df_chem = read.table("~/factor_interactions/data/finaldde2.txt",
                         header = T,sep = ",",na.strings = ".")
 }
 exists("gibbs_binary_gp_v3")
@@ -62,17 +64,15 @@ Z = scale(model.matrix(mylogit)[,c(15:21)])
 
 ###### Run Algorithm 
 ### Parameters
-tau = 0.08; c = 0.2; delta_sigf = 0.5
-dnorm(0.03,0,(c*tau))
-dnorm(0.03,0,(tau))
+delta_05 = 0.2
+a = 1/2
 
-res = gibbs_binary_gp_v3(y, X , Z = Z,
-                         nrun = 1500, burn = 1000,thin = 1,
-                         tau = 0.3,c = 2,delta_sigf = 0.5, exp_C = 2,
-                         heredity = "strong")
+res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin, 
+                             delta_rw = delta_05, epsilon_rw = 0.5,
+                             a = a, k = NULL)
 
 
 ####### Save results in cluster folder
-results_dir = file.path("/work/sta790/ff31/gp/results_0322")
+results_dir = file.path("/work/sta790/ff31/results_fact")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-saveRDS(res,   file.path(results_dir, "chain5.rds"))
+saveRDS(res,   file.path(results_dir, "long.rds"))
