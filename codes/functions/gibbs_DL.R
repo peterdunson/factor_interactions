@@ -152,7 +152,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
       for(j in 1:p){
          tau[j] = GIGrvg::rgig(n=1,lambda = 1-k, psi = 1, 
                                chi = 2*sum(abs(Lambda[j,])/phijh[j,]))
-      }\
+      }
       
       # --- Update phijh --- #
       Tjh = numeric(k)
