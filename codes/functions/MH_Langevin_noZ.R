@@ -15,6 +15,8 @@ MH_Langevin_noZ = function(phi,sigmasq_y,Lambda,ps,k,X,y,eta,
          (2*phi%*%t(eta[i,]) + 4*as.vector(t(eta[i,])%*%phi))%*%Psi%*%eta[i,]/sigmasq_y
          4*as.vector(t(eta[i,])%*%Psi%*%eta[i,])*Psi%*%eta[i,]/sigmasq_y
       
+         
+      # should be \mu_eta_i / 2 ---> check
       eta_star = as.numeric(rmvnorm(1,eta[i,] - epsilon_rw*mu_eta_i/4,
                                     diag(k)*epsilon_rw))
       
