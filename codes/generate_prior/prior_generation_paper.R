@@ -8,7 +8,7 @@ library(RColorBrewer)
 library(lattice)
 
 S = 100000
-k = 5
+k = 15
 p = 20
 
 # Parameters for dirichlet laplace
@@ -113,7 +113,7 @@ hist(beta1_X_DL2[1,],freq = F,breaks = seq(-10000,10000,by =0.05),xlim = xlim,
 abline(v = quantile(beta1_X_DL2[1,],probs = c(0.05,0.95)),col="red",lty="dotted")
 abline(v = quantile(beta1_X_DL2[1,],probs = c(0.25,0.75)),col="green",lty="dotted")
 hist(beta2_X_DL2[1,2,],freq = F,breaks = seq(-1000,1000,by =0.01),xlim = xlim,
-     xlab = "2nd order interaction",main = "k = 5, p = 20")
+     xlab = "2nd order interaction",main = "k = 15, p = 20")
 abline(v = quantile(beta2_X_DL2[1,2,],probs = c(0.05,0.95)),col="red",lty="dotted")
 abline(v = quantile(beta2_X_DL2[1,2,],probs = c(0.25,0.75)),col="green",lty="dotted")
 hist(beta2_X_DL2[1,2,],freq = F,breaks = seq(-1000,1000,by =0.01),xlim = xlim,

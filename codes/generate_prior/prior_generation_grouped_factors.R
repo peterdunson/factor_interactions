@@ -45,7 +45,10 @@ for (i in 1:S){
    #    }
    # }
    
-   Lambda_DL = matrix(c(1,1,1,0,0,0,0,0,0,1,1,1),p,k)
+   a_1 = rnorm(3)
+   a_2 = rnorm(3)
+   #Lambda_DL = matrix(c(1,1,1,0,0,0,0,0,0,1,1,1),p,k)
+   Lambda_DL = matrix(c(a_1,0,0,0,0,0,0,a_2),p,k)
    
    omega1 = rnorm(k,0,v_om)
    omega2 = rnorm(k,0,v_om)
@@ -100,11 +103,12 @@ df = data.frame(main_effect = beta1_X_DL[1,],
                 interaction_13 = beta2_X_DL[1,3,],
                 interaction_14 = beta2_X_DL[1,4,],
                 interaction_34 = beta2_X_DL[3,4,],
+                interaction_45 = beta2_X_DL[4,5,],
                 quad_11 = beta2_X_DL[1,1,],
                 interaction_3rd = beta3_X_DL[1,2,3,])
 
 
-X = cbind(df$interaction_12,df$interaction_34)
+X = cbind(df$interaction_12,df$interaction_13)
 
 plot(X, xlab="X label", ylab="Y label", pch=19, cex=Cex,
      xlim = xLim,ylim =xLim)
