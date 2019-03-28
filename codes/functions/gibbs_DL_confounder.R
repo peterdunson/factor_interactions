@@ -213,7 +213,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
          }else if(acp_mean < 0.2){
             delta_rw = delta_rw*2/3
          }
-         acp_mean = numeric(n)
+         acp = numeric(n)
          print(delta_rw)
          #print(paste("time for last 100 iterations:",round(as.numeric(Sys.time()-t),0),
          #            "seconds",sep=" "))

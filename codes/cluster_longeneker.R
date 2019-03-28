@@ -57,7 +57,10 @@ mylogit = glm(PRETERM ~ (DDE_A + P028_A1 + P052_A1 + P074_A1 +
                  RACEC1 + V_SMKNOW + V_SEINDX + V_MHGT + TRIGLYC +
                  V_MAGE + BMICAT, data = df_chem, family = "binomial")
 
-y = as.numeric(df_chem$PRETERM)
+y = as.numeric(df_chem$GESTDAY)
+ind = which(y > 340)
+df_chem = df_chem[-ind,]
+y = as.numeric(df_chem$GESTDAY)
 X = scale(model.matrix(mylogit)[,c(2:14)])
 Z = scale(model.matrix(mylogit)[,c(15:21)])
 
@@ -73,6 +76,6 @@ res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
 
 
 ####### Save results in cluster folder
-results_dir = file.path("/work/sta790/ff31/results")
+results_dir = file.path("/work/sta790/ff31/factor_interactions/results")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 saveRDS(res,   file.path(results_dir, "long.rds"))
