@@ -73,6 +73,6 @@ res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
 
 
 ####### Save results in cluster folder
-results_dir = file.path("/work/sta790/ff31/results_fact")
+results_dir = file.path("/work/sta790/ff31/results")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 saveRDS(res,   file.path(results_dir, "long.rds"))
