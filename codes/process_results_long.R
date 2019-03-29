@@ -1,13 +1,8 @@
 #### Processing of results
 library(tidyverse)
 library(plotly)
-results = readRDS("~/factor_interactions/results/long.RDS")
+results = readRDS("~/factor_interactions/results/long_a13.RDS")
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
-
-
-
-y_pred_mat = results$y_pred
-y_hat = apply(y_pred_mat,2,mean)
 
 plot(results$sigmasq_st,type="l")
 
@@ -24,13 +19,14 @@ quant_sup = function(x){
 
 apply(results$beta_bayes,2,quant)
 apply(results$beta_bayes,2,mean)
-apply(results$beta_z,2,mean)
-apply(results$beta_z,2,quant)
+apply(results$beta_Z,2,mean)
+apply(results$beta_Z,2,quant)
 apply(results$Omega_bayes,c(2,3),mean)
 apply(results$Omega_bayes,c(2,3),quant)
 
-plot(results$beta_bayes[,7],ty="l")
-plot(results$Omega_bayes[,5,10],ty="l")
+plot(results$beta_bayes[,2],ty="l")
+plot(results$Omega_bayes[,9,10],ty="l")
+plot(results$beta_Z[,3],ty="l")
 
 #### plot covariance matrix for paper
 sourceDirectory("~/factor_interactions/codes/post_processing/coverage_int")

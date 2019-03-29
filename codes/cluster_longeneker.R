@@ -66,6 +66,7 @@ ind = which(y > 340)
 df_chem = df_chem[-ind,]
 y = as.numeric(df_chem$GESTDAY)
 X = scale(model.matrix(mylogit)[-ind,c(2:14)])
+#ind = which(X[,1] > 120)
 Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
 #df_list = list(y = y, X = X, Z = Z)
 #saveRDS(df_list, file.path("~/factor_interactions/data/df_chem.RDS"))
@@ -75,9 +76,12 @@ Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
 ### Parameters
 delta_05 = 0.2
 
-res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin, 
-                             delta_rw = delta_05, epsilon_rw = 0.5,
-                             a = a, k = NULL)
+#res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin, 
+                            # delta_rw = delta_05, epsilon_rw = 0.5,
+                            # a = a, k = NULL)
+res = gibbs_DL(y, X, nrun, burn, thin = thin, 
+                          delta_rw = delta_05, epsilon_rw = 0.5,
+                          a = a, k = NULL)
 
 
 ####### Save results in cluster folder
