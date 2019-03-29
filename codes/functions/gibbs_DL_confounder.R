@@ -143,7 +143,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       # --- Update sigmasq_y --- #
       an = 0.5 + n/2
       bn = 0.5 + 0.5*t(y-eta%*%phi-diag(eta%*%Psi%*%eta.T)-mu_z)%*%
-         (y-eta%*%phi-diag(eta%*%Psi%*%eta.T))
+         (y-eta%*%phi-diag(eta%*%Psi%*%eta.T)-mu_z)
       sigmasq_y = 1/rgamma(1,an,bn)
       
       # --- Update Lambda --- #
