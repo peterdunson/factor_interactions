@@ -61,8 +61,8 @@ y = as.numeric(df_chem$GESTDAY)
 ind = which(y > 340)
 df_chem = df_chem[-ind,]
 y = as.numeric(df_chem$GESTDAY)
-X = scale(model.matrix(mylogit)[,c(2:14)])
-Z = scale(model.matrix(mylogit)[,c(15:21)])
+X = scale(model.matrix(mylogit)[-ind,c(2:14)])
+Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
 
 
 ###### Run Algorithm 
