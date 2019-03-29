@@ -24,8 +24,11 @@ apply(results$beta_Z,2,quant)
 apply(results$Omega_bayes,c(2,3),mean)
 apply(results$Omega_bayes,c(2,3),quant)
 
+d_ind = 4
+plot(results$Omega_bayes[,d_ind,d_ind],ty="l")
+d_ind = d_ind + 1
 plot(results$beta_bayes[,2],ty="l")
-plot(results$Omega_bayes[,9,10],ty="l")
+plot(results$Omega_bayes[,d_ind,d_ind],ty="l")
 plot(results$beta_Z[,3],ty="l")
 
 #### plot covariance matrix for paper

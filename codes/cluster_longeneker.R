@@ -37,7 +37,7 @@ burn = as.numeric(args[2]);
 thin = as.numeric(args[3]);
 a = as.numeric(args[4]);
 if (length(a) == 0){
-   a = 1/2
+   a = 1/2 
 }
 
 ###### Read Data from local git repo ##### 
@@ -74,14 +74,15 @@ Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
 
 ###### Run Algorithm 
 ### Parameters
-delta_05 = 0.2
+delta_05 = 0.0526749
 
-#res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin, 
-                            # delta_rw = delta_05, epsilon_rw = 0.5,
-                            # a = a, k = NULL)
-res = gibbs_DL(y, X, nrun, burn, thin = thin, 
+
+res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
                           delta_rw = delta_05, epsilon_rw = 0.5,
                           a = a, k = NULL)
+# res = gibbs_DL(y, X, nrun, burn, thin = thin, 
+#                           delta_rw = delta_05, epsilon_rw = 0.5,
+#                           a = a, k = NULL)
 
 
 ####### Save results in cluster folder
