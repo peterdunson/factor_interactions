@@ -96,9 +96,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
          
          if (logr > logu){
             eta[h,] = eta_star
-            if(i>burn){
-               acp[h] = acp[h] + 1
-            }
+            acp[h] = acp[h] + 1
          }
       }
       
@@ -188,6 +186,16 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
       }
       
       if (i%%100==0){
+         print(i)
+         acp_mean = mean(acp)/100
+         print(acp_mean)
+         if(acp_mean > 0.3){
+            delta_rw = delta_rw*2
+         }else if(acp_mean < 0.2){
+            delta_rw = delta_rw*2/3
+         }
+         acp = numeric(n)
+         print(delta_rw)
          #print(paste("time for last 100 iterations:",round(as.numeric(Sys.time()-t),0),
          #            "seconds",sep=" "))
          #t = Sys.time()
