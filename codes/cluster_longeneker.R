@@ -63,12 +63,14 @@ df_chem = df_chem[-ind,]
 y = as.numeric(df_chem$GESTDAY)
 X = scale(model.matrix(mylogit)[-ind,c(2:14)])
 Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
+#df_list = list(y = y, X = X, Z = Z)
+#saveRDS(df_list, file.path("~/factor_interactions/data/df_chem.RDS"))
 
 
 ###### Run Algorithm 
 ### Parameters
 delta_05 = 0.2
-a = 1/2
+a = 13
 
 res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin, 
                              delta_rw = delta_05, epsilon_rw = 0.5,
@@ -78,4 +80,4 @@ res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
 ####### Save results in cluster folder
 results_dir = file.path("/work/sta790/ff31/factor_interactions/results")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-saveRDS(res,   file.path(results_dir, "long.rds"))
+saveRDS(res,   file.path(results_dir, "long_a13.rds"))

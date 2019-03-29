@@ -2,6 +2,9 @@
 library(tidyverse)
 library(plotly)
 results = readRDS("~/factor_interactions/results/long.RDS")
+df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
+
+
 
 y_pred_mat = results$y_pred
 y_hat = apply(y_pred_mat,2,mean)
@@ -28,4 +31,29 @@ apply(results$Omega_bayes,c(2,3),quant)
 
 plot(results$beta_bayes[,7],ty="l")
 plot(results$Omega_bayes[,5,10],ty="l")
+
+#### plot covariance matrix for paper
+sourceDirectory("~/factor_interactions/codes/post_processing/coverage_int")
+cover = coverage_int(results$beta_bayes,results$Omega_bayes)
+beta_hat = apply(results$beta_bayes,2,mean)
+Omega_hat = apply(results$Omega_bayes,c(2,3),mean)
+alpha_hat = apply(results$beta_Z,2,mean)
+ind_b = which(cover[[1]] == 0); ind_i = which(cover[[2]] == 0) 
+beta_hat[ind_b] = 0; Omega_hat[ind_i] = 0
+
+
+### competitors
+df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
+sourceDirectory("~/factor_interactions/codes/post_processing/compute_errors")
+y = df_chem$y; X = df_chem$X; Z = df_chem$Z
+X_test = X; y_test = y; Omega_true = Omega_hat; beta_true = beta_hat
+hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
+Family = quiet(FAMILY_fct(y, X, X_test, y_test))
+PIE = PIE_fct(y, X, X_test, y_test)
+RAMP = RAMP_fct(y, X, X_test, y_test)
+
+errors = compute_errors(hiernet,Family,PIE,RAMP,
+                        y,y_test-Z%*%alpha_hat,Omega_true,beta_true,
+                        results)
+
 
