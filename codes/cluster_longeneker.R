@@ -37,7 +37,7 @@ burn = as.numeric(args[2]);
 thin = as.numeric(args[3]);
 a = as.numeric(args[4]);
 if (length(a) == 0){
-   a = 1/(40)
+   a = 1/2
 }
 
 ###### Read Data from local git repo ##### 
