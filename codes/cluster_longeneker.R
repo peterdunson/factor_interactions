@@ -37,7 +37,7 @@ burn = as.numeric(args[2]);
 thin = as.numeric(args[3]);
 a = as.numeric(args[4]);
 if (length(a) == 0){
-   a = 0.1
+   a = 0.5
 }
 
 ###### Read Data from local git repo ##### 
@@ -87,4 +87,4 @@ res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
 ####### Save results in cluster folder
 results_dir = file.path("/work/sta790/ff31/factor_interactions/results")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-saveRDS(res,   file.path(results_dir, "long_a13.rds"))
+saveRDS(res,   file.path(results_dir, "long_a132.rds"))
