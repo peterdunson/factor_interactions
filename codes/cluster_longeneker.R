@@ -65,6 +65,7 @@ y = as.numeric(df_chem$GESTDAY)
 ind = which(y > 340)
 df_chem = df_chem[-ind,]
 y = as.numeric(df_chem$GESTDAY)
+#df_chem$V_BWGT
 X = scale(model.matrix(mylogit)[-ind,c(2:14)])
 #ind = which(X[,1] > 120)
 Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
@@ -74,10 +75,10 @@ Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
 
 ###### Run Algorithm 
 ### Parameters
-delta_05 = 0.0526749
+delta_05 = 0.126749
 res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
                           delta_rw = delta_05, epsilon_rw = 0.5,
-                          a = a, k = 4)
+                          a = a, k = 10)
 # res = gibbs_DL(y, X, nrun, burn, thin = thin, 
 #                           delta_rw = delta_05, epsilon_rw = 0.5,
 #                           a = a, k = NULL)
