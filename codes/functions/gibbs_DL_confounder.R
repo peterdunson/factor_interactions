@@ -50,6 +50,8 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    alpha_bayes = numeric(sp)
    beta_bayes = matrix(0,sp,p)
    beta_Z_bayes = matrix(0,sp,l)
+   phi_st = array(0,c(sp,k))
+   Psi_st = array(0,c(sp,k,k))
    acp = numeric(n)
    
    sigmasq_y = 1                     # initial values
@@ -201,6 +203,8 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
          beta_bayes[count,] = as.vector(t(phi)%*%a_n)
          alpha_bayes[count] = tr(Psi%*%V_n)
          beta_Z_bayes[count,] = beta_Z
+         Psi_st[count,,] = Psi
+         phi_st[count,] = phi
          count = count + 1
       }
       
@@ -229,6 +233,8 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
                beta_bayes = beta_bayes,
                Omega_bayes = Omega_bayes,
                beta_Z = beta_Z_bayes,
+               phi = phi_st,
+               Psi = Psi_st,
                acp = acp/(nrun-burn),
                tau = tau_st,
                sigmasq_st = sigmasq_st))
