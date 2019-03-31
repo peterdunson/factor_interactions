@@ -15,7 +15,7 @@ library(statmod)
 library(MCMCpack)
 
 gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1, 
-                    delta_rw = 0.002, epsilon_rw = 0.5,
+                    delta_rw = 0.2, epsilon_rw = 0.5,
                     a = 1/2, k = NULL){
    n = nrow(X)
    p = ncol(X)                    # collect data attributes
