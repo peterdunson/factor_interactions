@@ -1,7 +1,7 @@
 #### Processing of results
 library(tidyverse)
 library(plotly)
-results = readRDS("~/factor_interactions/results/long_a13.RDS")
+results = readRDS("~/factor_interactions/results/long_a132.RDS")
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 
 plot(results$sigmasq_st,type="l")
@@ -24,14 +24,16 @@ apply(results$beta_Z,2,quant)
 apply(results$Omega_bayes,c(2,3),mean)
 apply(results$Omega_bayes,c(2,3),quant)
 
+
 d_ind = 4
 plot(results$Omega_bayes[,d_ind,d_ind],ty="l")
 d_ind = d_ind + 1
 plot(results$beta_bayes[,2],ty="l")
 plot(results$Omega_bayes[,d_ind,d_ind],ty="l")
 plot(results$beta_Z[,3],ty="l")
+plot(results$Omega[,9,5],ty="l")
 
-#### plot covariance matrix for paper
+ #### plot covariance matrix for paper
 sourceDirectory("~/factor_interactions/codes/post_processing/coverage_int")
 cover = coverage_int(results$beta_bayes,results$Omega_bayes)
 beta_hat = apply(results$beta_bayes,2,mean)

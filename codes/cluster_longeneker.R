@@ -51,8 +51,19 @@ if (!exists("df_chem")){
 }
 exists("gibbs_binary_gp_v3")
 exists("df_chem")
-df_chem = df_chem[-1861,]
 
+
+##### Remove Outliers
+df_chem = df_chem[-1861,]
+gest_day = as.numeric(df_chem$GESTDAY)
+ind = which(gest_day > 340)
+df_chem = df_chem[-ind,]
+pcbs = subset(df_chem,select = c( P028_A1,P052_A1,P074_A1,
+                                     P105_A1,P118_A1,P153_A1,P170_A1,
+                                     P138_A1,P180_A1,P194_A1,P203_A1))
+totpcb = apply(pcbs,1,sum)
+which(totpcb > 10)
+df_chem = df_chem[-ind,]
 
 ###### create matrix y, X, Z
 mylogit = glm(PRETERM ~ (DDE_A + P028_A1 + P052_A1 + P074_A1 +
@@ -61,14 +72,12 @@ mylogit = glm(PRETERM ~ (DDE_A + P028_A1 + P052_A1 + P074_A1 +
                  RACEC1 + V_SMKNOW + V_SEINDX + V_MHGT + TRIGLYC +
                  V_MAGE + BMICAT, data = df_chem, family = "binomial")
 
-y = as.numeric(df_chem$GESTDAY)
-ind = which(y > 340)
-df_chem = df_chem[-ind,]
+
 y = as.numeric(df_chem$GESTDAY)
 #df_chem$V_BWGT
-X = scale(model.matrix(mylogit)[-ind,c(2:14)])
+X = scale(model.matrix(mylogit)[,c(2:14)])
 #ind = which(X[,1] > 120)
-Z = scale(model.matrix(mylogit)[-ind,c(15:21)])
+Z = scale(model.matrix(mylogit)[,c(15:21)])
 #df_list = list(y = y, X = X, Z = Z)
 #saveRDS(df_list, file.path("~/factor_interactions/data/df_chem.RDS"))
 
