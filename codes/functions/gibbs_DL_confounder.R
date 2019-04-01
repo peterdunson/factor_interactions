@@ -114,32 +114,32 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       }
       
       # --- Update Psi --- #
-      # MM = model.matrix(y~.^2 - 1,as.data.frame(eta))   # perform factorized regression
-      # X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
-      # X_reg.T = t(X_reg)
-      # Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
-      # Vcsi = solve(Lambda_n)
-      # Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z)/sigmasq_y
-      # csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
-      # lambda_diag = csi[1:k]
-      # lambda = csi[(k+1):length(csi)]
-      # Psi[lower.tri(Psi)] = lambda/2
-      # Psi[upper.tri(Psi)] = 0
-      # Psi = Psi + t(Psi)
-      # diag(Psi) = lambda_diag
-      
       MM = model.matrix(y~.^2 - 1,as.data.frame(eta))   # perform factorized regression
-      X_reg = cbind(MM[,(k+1):ncol(MM)])
+      X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
       X_reg.T = t(X_reg)
       Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z)/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
-      lambda = csi
+      lambda_diag = csi[1:k]
+      lambda = csi[(k+1):length(csi)]
       Psi[lower.tri(Psi)] = lambda/2
       Psi[upper.tri(Psi)] = 0
       Psi = Psi + t(Psi)
-      diag(Psi) = 0
+      diag(Psi) = lambda_diag
+      
+      # MM = model.matrix(y~.^2 - 1,as.data.frame(eta))   # perform factorized regression
+      # X_reg = cbind(MM[,(k+1):ncol(MM)])
+      # X_reg.T = t(X_reg)
+      # Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
+      # Vcsi = solve(Lambda_n)
+      # Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z)/sigmasq_y
+      # csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
+      # lambda = csi
+      # Psi[lower.tri(Psi)] = lambda/2
+      # Psi[upper.tri(Psi)] = 0
+      # Psi = Psi + t(Psi)
+      # diag(Psi) = 0
       
       # --- Update phi --- #
       eta.T = t(eta)

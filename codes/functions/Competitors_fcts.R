@@ -42,10 +42,13 @@ FAMILY_fct = function(y, X, X_test = X, y_test = y,
    beta[coef_FAMILY$mains[,1]] = coef_FAMILY$mains[,2]
    int_Family = coef_FAMILY$interacts
    Omega = matrix(0,p,p)
-   for(i in 1:nrow(int_Family)){
-      Omega[int_Family[i,1],int_Family[i,2]] = int_Family[i,3]
+   if(length(int_Family)>0){
+      for(i in 1:nrow(int_Family)){
+         Omega[int_Family[i,1],int_Family[i,2]] = int_Family[i,3]
+      }
+      Omega = (Omega + t(Omega))/2
    }
-   Omega = (Omega + t(Omega))/2
+   
    
    
    #prediction

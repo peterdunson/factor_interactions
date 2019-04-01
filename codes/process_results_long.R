@@ -47,7 +47,7 @@ beta_hat[ind_b] = 0; Omega_hat[ind_i] = 0
 ### competitors
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 sourceDirectory("~/factor_interactions/codes/post_processing/compute_errors")
-y = df_chem$y; X = df_chem$X; Z = df_chem$Z
+y = as.numeric(scale(df_chem$y)); X = as.matrix(scale(df_chem$X)); Z = df_chem$Z
 X_test = X; y_test = y; Omega_true = Omega_hat; beta_true = beta_hat
 hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
 Family = quiet(FAMILY_fct(y, X, X_test, y_test))

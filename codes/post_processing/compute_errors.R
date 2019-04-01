@@ -35,6 +35,7 @@ compute_errors = function(hiernet,Family,PIE,RAMP,
          betabayes_hat = apply(gibbs$beta_bayes,2,mean)
          Omegabayes_hat = apply(gibbs$Omega_bayes,c(2,3),mean)
          
+         
          #in sample
          err_factor = y - X%*%betabayes_hat - 
             as.vector(diag(X%*%Omegabayes_hat%*%t(X))) - alpha_bayes_hat
