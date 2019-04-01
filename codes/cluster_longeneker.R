@@ -73,7 +73,7 @@ mylogit = glm(PRETERM ~ (DDE_A + P028_A1 + P052_A1 + P074_A1 +
                  V_MAGE + BMICAT, data = df_chem, family = "binomial")
 
 
-y = as.numeric(df_chem$GESTDAY)
+y = scale(as.numeric(df_chem$GESTDAY))
 #df_chem$V_BWGT
 X = scale(model.matrix(mylogit)[,c(2:14)])
 #ind = which(X[,1] > 120)
