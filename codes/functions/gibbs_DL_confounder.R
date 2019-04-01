@@ -54,7 +54,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    Psi_st = array(0,c(sp,k,k))
    acp = numeric(n)
    
-   sigmasq_y = 1                     # initial values
+   sigmasq_y = mean(y^2)/10                  # initial values
    phi = numeric(k)
    ps = rgamma(p,as,bs)
    Sigma = diag(1/ps)
@@ -143,13 +143,13 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       
       # --- Update phi --- #
       eta.T = t(eta)
-      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))/100
+      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))/10
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%eta.T%*%(y-diag(eta%*%Psi%*%eta.T)-mu_z)/sigmasq_y     # using updated psi
       phi = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
       
       # --- Update beta_Z --- #
-      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))/100
+      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))/10
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%t(Z)%*%(y-diag(eta%*%Psi%*%eta.T)-eta%*%phi)/sigmasq_y     # using updated psi
       beta_Z = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)

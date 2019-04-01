@@ -23,6 +23,7 @@ apply(results$beta_Z,2,mean)
 apply(results$beta_Z,2,quant)
 apply(results$Omega_bayes,c(2,3),mean)
 apply(results$Omega_bayes,c(2,3),quant)
+apply(results$Psi,c(2,3),mean)
 
 
 d_ind = 4

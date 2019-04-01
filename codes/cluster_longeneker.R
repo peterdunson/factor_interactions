@@ -62,7 +62,7 @@ pcbs = subset(df_chem,select = c( P028_A1,P052_A1,P074_A1,
                                      P105_A1,P118_A1,P153_A1,P170_A1,
                                      P138_A1,P180_A1,P194_A1,P203_A1))
 totpcb = apply(pcbs,1,sum)
-which(totpcb > 10)
+ind = which(totpcb > 10)
 df_chem = df_chem[-ind,]
 
 ###### create matrix y, X, Z
