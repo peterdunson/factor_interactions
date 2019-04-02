@@ -3,7 +3,6 @@
 Hiernet_fct = function(y, X, X_test = X, y_test = y, strong = T){
    p = ncol(X)
    n = nrow(X)
-   
    fit=hierNet(X,y,lam=50, strong=strong,
                trace = 0)
 

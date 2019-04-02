@@ -1,7 +1,7 @@
 #### Processing of results
 library(tidyverse)
 library(plotly)
-results = readRDS("~/factor_interactions/results/long_a132.RDS")
+results = readRDS("~/factor_interactions/results/long_a133.RDS")
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 
 plot(results$sigmasq_st,type="l")
@@ -32,9 +32,9 @@ d_ind = d_ind + 1
 plot(results$beta_bayes[,2],ty="l")
 plot(results$Omega_bayes[,d_ind,d_ind],ty="l")
 plot(results$beta_Z[,3],ty="l")
-plot(results$Omega[,9,5],ty="l")
+plot(results$Omega[,1,5],ty="l")
 
- #### plot covariance matrix for paper
+#### plot covariance matrix for paper
 sourceDirectory("~/factor_interactions/codes/post_processing/coverage_int")
 cover = coverage_int(results$beta_bayes,results$Omega_bayes)
 beta_hat = apply(results$beta_bayes,2,mean)
@@ -42,6 +42,16 @@ Omega_hat = apply(results$Omega_bayes,c(2,3),mean)
 alpha_hat = apply(results$beta_Z,2,mean)
 ind_b = which(cover[[1]] == 0); ind_i = which(cover[[2]] == 0) 
 beta_hat[ind_b] = 0; Omega_hat[ind_i] = 0
+
+#### plot interactions
+# library(ggcorrplot)
+# colnames(Omega_hat) = rownames(Omega_hat) = colnames(X)
+# max_o = max(Omega_hat); min_o = min(Omega_hat)
+# Omega_hat2 = (2*Omega_hat - (max_o + min_o))/(max_o - min_o)
+# ggcorrplot(Omega_hat2,
+#            outline.col = "white",
+#            #ggtheme = ggplot2::theme_gray,
+#            colors = c("#6D9EC1", "white", "#E46726"))
 
 
 ### competitors
