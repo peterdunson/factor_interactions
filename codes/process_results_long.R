@@ -2,7 +2,7 @@
 library(tidyverse)
 library(plotly)
 library(R.utils)
-results = readRDS("~/factor_interactions/results/long_a133.rds")
+results = readRDS("~/factor_interactions/results/long_01_02.rds")
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 
 plot(results$sigmasq_st,type="l")
@@ -36,7 +36,7 @@ plot(results$beta_Z[,3],ty="l")
 plot(results$Omega[,1,5],ty="l")
 
 #### plot covariance matrix for paper
-sourceDirectory("~/factor_interactions/codes/post_processing")
+source("~/factor_interactions/codes/post_processing/coverage_int.R")
 cover = coverage_int(results$beta_bayes,results$Omega_bayes)
 beta_hat = apply(results$beta_bayes,2,mean)
 Omega_hat = apply(results$Omega_bayes,c(2,3),mean)
@@ -100,9 +100,11 @@ df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 sourceDirectory("~/factor_interactions/codes/post_processing")
 source("~/factor_interactions/codes/functions/Competitors_fcts.R")
 source("~/factor_interactions/codes/functions/quiet.R")
+source("~/factor_interactions/codes/post_processing/compute_errors.R")
+
 
 y = as.numeric(scale(df_chem$y)); X = as.matrix(scale(df_chem$X)); Z = df_chem$Z
-y_test = as.numeric(scale(df_chem$y_test)); X = as.matrix(scale(df_chem$X_test));
+y_test = as.numeric(scale(df_chem$y_test)); X_test = as.matrix(scale(df_chem$X_test));
 Omega_true = Omega_hat; beta_true = beta_hat
 hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
 Family = quiet(FAMILY_fct(y, X, X_test, y_test))
@@ -123,7 +125,7 @@ quant_sup = function(x){
    quantile(x,probs = c(0.95))
 }
 
-VX = sqrt(attributes(df_chem$X)$`scaled:scale`); sd_y = sd(df_chem$y)
+VX = df_chem$VX; sd_y = df_chem$sd_y
 Scale = diag(VX*sd_y)
 #beta = c(beta_hat,hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
 beta = c(apply(results$beta_bayes,2,mean)%*%Scale,

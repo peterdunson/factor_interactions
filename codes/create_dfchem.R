@@ -36,6 +36,8 @@ y = scale(as.numeric(df_chem$GESTDAY))
 X = scale(model.matrix(mylogit)[,c(2:14)])
 Z = scale(model.matrix(mylogit)[,c(15:21)])
 
+VX = attributes(X)$`scaled:scale`
+sd_y = attributes(y)$`scaled:scale`
 
 set.seed(1)
 ind = sample(1:length(y),100)
@@ -45,5 +47,11 @@ Z_test = Z[ind,]; Z = Z[-ind,]
 
 df_list = list(y = y, y_test = y_test,
                X = X, X_test = X_test,
-               Z = Z, Z_test = Z_test)
+               Z = Z, Z_test = Z_test,
+               VX = VX, sd_y = sd_y)
 #saveRDS(df_list, file.path("~/factor_interactions/data/df_chem.RDS"))
+
+XX = rbind(df_list$X,df_list$X_test) 
+XX = XX[-1,-1]
+XX = XX[-12,-12]
+mean(abs(cor(XX))[lower.tri(cor(XX))])
