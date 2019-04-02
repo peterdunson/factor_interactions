@@ -36,9 +36,14 @@ if (length(args)==0) {
 nrun = as.numeric(args[1]); 
 burn = as.numeric(args[2]); 
 thin = as.numeric(args[3]);
-a = as.numeric(args[4]);
+#a = as.numeric(args[4]);
 if (length(a) == 0){
    a = 1/13
+}
+if (length(nrun) == 0){
+   nrun = 1000
+   burn = 500
+   thin = 1
 }
 
 ###### Read Data from local git repo ##### 
