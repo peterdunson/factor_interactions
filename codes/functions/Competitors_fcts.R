@@ -1,4 +1,9 @@
 ####### Competitors Functions ######
+library(hierNet)
+library(FAMILY)
+library(PIE)
+library(RAMP)
+library('glmnet')
 
 Hiernet_fct = function(y, X, X_test = X, y_test = y, strong = T){
    p = ncol(X)

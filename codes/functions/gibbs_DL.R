@@ -211,5 +211,6 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
                Omega_bayes = Omega_bayes,
                acp = acp/(nrun-burn),
                tau = tau_st,
-               sigmasq_st = sigmasq_st))
+               sigmasq_st = sigmasq_st,
+               a = a))
 }

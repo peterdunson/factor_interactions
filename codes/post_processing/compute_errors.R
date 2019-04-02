@@ -1,3 +1,5 @@
+library(psych)
+
 compute_errors = function(hiernet,Family,PIE,RAMP,
                           y,y_test,Omega_true,beta_true,
                           ...){

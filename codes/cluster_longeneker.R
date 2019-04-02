@@ -5,6 +5,7 @@ library(beepr)
 library(psych)
 library(bayesSurv)
 library('PIE')
+library(R.utils)
 library('glmnet')
 library(RAMP)
 library(hierNet)
@@ -20,7 +21,7 @@ library(GIGrvg)
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
-sourceDirectory("~/factor_interactions/codes/functions")
+source("~/factor_interactions/codes/functions/gibbs_DL_confounder.R")
 sourceDirectory("~/factor_interactions/codes/generate_data")
 sourceDirectory("~/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
@@ -37,57 +38,26 @@ burn = as.numeric(args[2]);
 thin = as.numeric(args[3]);
 a = as.numeric(args[4]);
 if (length(a) == 0){
-   a = 0.5
+   a = 1/13
 }
 
 ###### Read Data from local git repo ##### 
 #cluster
-df_chem = read.table("/work/sta790/ff31/factor_interactions/data/finaldde2.txt",
-                     header = T,sep = ",",na.strings = ".")
+df_chem = readRDS("/work/sta790/ff31/factor_interactions/data/df_chem.RDS")
 #local macbook
 if (!exists("df_chem")){
-   df_chem = read.table("~/factor_interactions/data/finaldde2.txt",
-                        header = T,sep = ",",na.strings = ".")
+   df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 }
-exists("gibbs_binary_gp_v3")
 exists("df_chem")
-
-
-##### Remove Outliers
-df_chem = df_chem[-1861,]
-gest_day = as.numeric(df_chem$GESTDAY)
-ind = which(gest_day > 340)
-df_chem = df_chem[-ind,]
-pcbs = subset(df_chem,select = c( P028_A1,P052_A1,P074_A1,
-                                     P105_A1,P118_A1,P153_A1,P170_A1,
-                                     P138_A1,P180_A1,P194_A1,P203_A1))
-totpcb = apply(pcbs,1,sum)
-ind = which(totpcb > 10)
-df_chem = df_chem[-ind,]
-
-###### create matrix y, X, Z
-mylogit = glm(PRETERM ~ (DDE_A + P028_A1 + P052_A1 + P074_A1 +
-                            P105_A1 + P118_A1+P153_A1+P170_A1+
-                            P138_A1+ P180_A1+ P194_A1+P203_A1+ TOT_CHOL)^2 + 
-                 RACEC1 + V_SMKNOW + V_SEINDX + V_MHGT + TRIGLYC +
-                 V_MAGE + BMICAT, data = df_chem, family = "binomial")
-
-
-y = scale(as.numeric(df_chem$GESTDAY))
-#df_chem$V_BWGT
-X = scale(model.matrix(mylogit)[,c(2:14)])
-#ind = which(X[,1] > 120)
-Z = scale(model.matrix(mylogit)[,c(15:21)])
-#df_list = list(y = y, X = X, Z = Z)
-#saveRDS(df_list, file.path("~/factor_interactions/data/df_chem.RDS"))
 
 
 ###### Run Algorithm 
 ### Parameters
+y = as.numeric(scale(df_chem$y)); X = as.matrix(scale(df_chem$X)); Z = df_chem$Z
 delta_05 = 0.126749
 res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
                           delta_rw = delta_05, epsilon_rw = 0.5,
-                          a = a, k = 10)
+                          a = a, k = 7)
 # res = gibbs_DL(y, X, nrun, burn, thin = thin, 
 #                           delta_rw = delta_05, epsilon_rw = 0.5,
 #                           a = a, k = NULL)
@@ -96,4 +66,4 @@ res = gibbs_DL_confounder(y, X, Z, nrun, burn, thin = thin,
 ####### Save results in cluster folder
 results_dir = file.path("/work/sta790/ff31/factor_interactions/results")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
-saveRDS(res,   file.path(results_dir, "long_a133.rds"))
+saveRDS(res,   file.path(results_dir, "long_01_02.rds"))
