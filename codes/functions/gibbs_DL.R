@@ -73,7 +73,6 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
    for(i in 1:nrun){
       
       # --- Update eta --- #
-      Lambda.T = t(Lambda)
       aMH = phi%*%t(phi)/sigmasq_y + Lambda.T%*%diag(ps)%*%Lambda + diag(k)
       
       for (h in 1:n){                # Metropolis hastings step 
@@ -141,6 +140,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
                                  solve(t(Llamt),
                                        ps[j] * eta.T %*% X[,j])))
       }
+      Lambda.T = t(Lambda)
       
       # --- Update psijh --- #
       mujh = phijh*matrix(rep(tau,k),p,k,byrow = F)/abs(Lambda)

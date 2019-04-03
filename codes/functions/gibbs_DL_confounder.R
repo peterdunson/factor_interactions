@@ -82,7 +82,6 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    for(i in 1:nrun){
       
       # --- Update eta --- #
-      Lambda.T = t(Lambda)
       aMH = phi%*%t(phi)/sigmasq_y + Lambda.T%*%diag(ps)%*%Lambda + diag(k)
       for (h in 1:n){                # Metropolis hastings step 
          
@@ -165,6 +164,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       Plam = psijh*(phijh^2)*matrix(rep(tau^2,k),p,k,byrow=F)
       eta2 = eta.T%*%eta
       zlams = rnorm(k*p)       # generate normal draws all at once 
+      Lambda.T = t(Lambda)
       
       for(j in 1:p) {
          Llamt = chol(diag(Plam[j,]) + ps[j]*eta2)
