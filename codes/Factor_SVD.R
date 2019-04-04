@@ -8,7 +8,7 @@ library(psych)
 #### Generate X ### 
 p = 10; 
 W = riwish(p+1,diag(p))
-n = 30000; 
+n = 100000; 
 svd_W = svd(W)
 d = svd_W$d; u = svd_W$u; v = svd_W$v;
 X = bayesSurv::rMVNorm(n=n,Sigma=W)
@@ -128,17 +128,18 @@ for(i in 1:nrun){
    }
 }
 
-Omega_hat = apply(Omega_bayes, c(2,3), mean)
+Omega_hat =  apply(Omega_bayes, c(2,3), mean)
+Sigma_hat = diag(apply(Sigma_st,2, mean))
 err = mean(Omega_hat-W)
 err_sq = mean((Omega_hat-W)^2)
 err_svd = mean(Omega_hat-W_hat)
 err_svd_sq = mean((Omega_hat-W_hat)^2)
-print(c(err,err_sq,err_svd,err_svd_sq))
+#print(c(err,err_sq,err_svd,err_svd_sq))
 mean(W-W_hat);mean((W-W_hat)^2)
 
 # Frob
 Fr_true = Omega_hat - W; sqrt(tr(t(Fr_true)%*%Fr_true))
-#Fr_svd = Omega_hat - W_hat; sqrt(tr(t(Fr_svd)%*%Fr_svd))
+Fr_svd = Omega_hat - W_hat; sqrt(tr(t(Fr_svd)%*%Fr_svd))
 Fr_svd_true = W - W_hat; sqrt(tr(t(Fr_svd_true)%*%Fr_svd_true))
 
 # svd from the Cov of (X)
@@ -147,6 +148,20 @@ d_c_hat = c(d_c[1:k],rep(0,p-k))
 W_c_hat = u_c%*%diag(d_c_hat)%*%t(v_c)
 #Fr_c = C - W; sqrt(tr(t(Fr_c)%*%Fr_c))
 Fr_c_hat = W_c_hat - W; sqrt(tr(t(Fr_c_hat)%*%Fr_c_hat))
+W_conv = u%*%(diag(d_hat) - Sigma_hat)%*%t(v) + Sigma_hat
+Fr_conv = Omega_hat - W_conv; sqrt(tr(t(Fr_conv)%*%Fr_conv))
+apply(Sigma_st,2,mean)
+
 
 #apply(X,2,var);apply(Sigma_st,2,mean)
+
+
+svd_con = svd(u%*%(diag(d) - t(u)%*%Sigma_hat%*%v)%*%t(v))
+u_conv = svd_con$u; v_conv = svd_con$v; d_conv = svd_con$d
+d_conv_hat = diag(c(d_conv[1:k],rep(0,p-k)))
+W_conv = u_conv%*%d_conv_hat%*%t(v_conv)
+LambdaLambdaT_hat = Omega_hat - Sigma_hat
+Fr_conv = LambdaLambdaT_hat - W_conv; sqrt(tr(t(Fr_conv)%*%Fr_conv))
+
+
 
