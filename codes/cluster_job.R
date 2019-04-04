@@ -85,89 +85,30 @@ for(s in 1:S){
    gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_05, epsilon_rw = 0.5,
                           a = 1/2, k = NULL)
-   acp_mean = mean(gibbs_DL_05$acp)
-   while(acp_mean > 0.3 | acp_mean < 0.2){
-      if(acp_mean > 0.3){
-         delta_05 = delta_05*2
-      }else if(acp_mean < 0.2){
-         delta_05 = delta_05*2/3
-      }
-      gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
-                             delta_rw = delta_05, epsilon_rw = 0.5,
-                             a = 1/2, k = NULL)
-      acp_mean = mean(gibbs_DL_05$acp)
-      print(acp_mean)
-   }
-   
-   if(s == 1){
-      delta_k = delta_10 = delta_50 = delta_05
-   }
    
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
                           a = floor(log(p)*3), k = NULL)
-   acp_mean = mean(gibbs_DL_k$acp)
-   while(acp_mean > 0.3 | acp_mean < 0.2){
-      if(acp_mean > 0.3){
-         delta_k = delta_k*2
-      }else if(acp_mean < 0.2){
-         delta_k = delta_k*2/3
-      }
-      gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
-                             delta_rw = delta_k, epsilon_rw = 0.5,
-                             a = floor(log(p)*3), k = NULL)
-      acp_mean = mean(gibbs_DL_k$acp)
-      print(acp_mean)
-   }
-   
    
    
    gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_10, epsilon_rw = 0.5, 
                           k = NULL, alpha_prior = p*floor(log(p)*3)/10,
                           theta_inf = 0.05)
-   acp_mean = mean(gibbs_CUSP_10$acp)
-   while(acp_mean > 0.3 | acp_mean < 0.2){
-      if(acp_mean > 0.3){
-         delta_10 = delta_10*2
-      }else if(acp_mean < 0.2){
-         delta_10 = delta_10*2/3
-      }
-      gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
-                                 delta_rw = delta_10, epsilon_rw = 0.5, 
-                                 k = NULL, alpha_prior = p*floor(log(p)*3)/10,
-                                 theta_inf = 0.05)
-      acp_mean = mean(gibbs_CUSP_10$acp)
-      print(acp_mean)
-   }
    
    gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
                               delta_rw = delta_50, epsilon_rw = 0.5, 
                               k = NULL, alpha_prior = p*floor(log(p)*3)/2,
                               theta_inf = 0.05)
-   acp_mean = mean(gibbs_CUSP_50$acp)
-   while(acp_mean > 0.3 | acp_mean < 0.2){
-      if(acp_mean > 0.3){
-         delta_50 = delta_50*2
-      }else if(acp_mean < 0.2){
-         delta_50 = delta_50*2/3
-      }
-      gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
-                                delta_rw = delta_50, epsilon_rw = 0.5, 
-                                k = NULL, alpha_prior = p*floor(log(p)*3)/2,
-                                theta_inf = 0.05)
-      acp_mean = mean(gibbs_CUSP_50$acp)
-      print(acp_mean)
-   }
-
    
    # acp 
-   acp_1 = gibbs_DL_05$acp;acp_2 = gibbs_DL_k$acp;acp_3 = gibbs_CUSP_10$acp;acp_4 = gibbs_CUSP_50$acp;
-   acp_min[s,1] = min(acp_1/(nrun-burn));acp_max[s,1] = max(acp_1/(nrun-burn));acp_mean_st[s,1] = mean(acp_1/(nrun-burn))
-   acp_min[s,2] = min(acp_2/(nrun-burn));acp_max[s,2] = max(acp_2/(nrun-burn));acp_mean_st[s,2] = mean(acp_2/(nrun-burn))
-   acp_min[s,3] = min(acp_3/(nrun-burn));acp_max[s,3] = max(acp_3/(nrun-burn));acp_mean_st[s,3] = mean(acp_3/(nrun-burn))
-   acp_min[s,4] = min(acp_4/(nrun-burn));acp_max[s,4] = max(acp_4/(nrun-burn));acp_mean_st[s,4] = mean(acp_4/(nrun-burn))
+   # acp_1 = gibbs_DL_05$acp;acp_2 = gibbs_DL_k$acp;acp_3 = gibbs_CUSP_10$acp;acp_4 = gibbs_CUSP_50$acp;
+   # acp_min[s,1] = min(acp_1/(nrun-burn));acp_max[s,1] = max(acp_1/(nrun-burn));acp_mean_st[s,1] = mean(acp_1/(nrun-burn))
+   # acp_min[s,2] = min(acp_2/(nrun-burn));acp_max[s,2] = max(acp_2/(nrun-burn));acp_mean_st[s,2] = mean(acp_2/(nrun-burn))
+   # acp_min[s,3] = min(acp_3/(nrun-burn));acp_max[s,3] = max(acp_3/(nrun-burn));acp_mean_st[s,3] = mean(acp_3/(nrun-burn))
+   # acp_min[s,4] = min(acp_4/(nrun-burn));acp_max[s,4] = max(acp_4/(nrun-burn));acp_mean_st[s,4] = mean(acp_4/(nrun-burn))
+   # 
    
    # Competitors
    hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
@@ -220,11 +161,11 @@ list_res = list(
    MSE_beta = err_beta,
    err_pred = err_pred,
    err_test = err,
-   FR = FR,
-   acp_min = acp_min,
-   acp_mean = acp_mean_st,
-   acp_max = acp_max,
-   delta = c(delta_k,delta_05,delta_10,delta_50)
+   FR = FR
+   #acp_min = acp_min,
+   #acp_mean = acp_mean_st,
+   #acp_max = acp_max,
+   #delta = c(delta_k,delta_05,delta_10,delta_50)
 )
 
 results_dir = file.path("/work/sta790/ff31/results_fact")

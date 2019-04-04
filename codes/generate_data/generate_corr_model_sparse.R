@@ -11,7 +11,7 @@ generate_corr_model_sparse = function(p = 10,n = 100,k_true = 5){
    
    # true coefficients
    beta_true = numeric(p)
-   beta_true[c(1,3,4,7,8)] = c(1,-1,1)
+   beta_true[c(1,3,4)] = c(1,-1,1)
    Omega_true = matrix(0,p,p)
    Omega_true[1,2] = 1;Omega_true[3,3] = -1;
    Omega_true = Omega_true+t(Omega_true)

@@ -2,7 +2,7 @@
 library(tidyverse)
 library(plotly)
 library(R.utils)
-results = readRDS("~/factor_interactions/results/long_01_02.rds")
+results = readRDS("~/factor_interactions/results/long_a133.rds")
 df_chem = readRDS("~/factor_interactions/data/df_chem.RDS")
 
 plot(results$sigmasq_st,type="l")
@@ -128,8 +128,8 @@ quant_sup = function(x){
 VX = df_chem$VX; sd_y = df_chem$sd_y
 Scale = diag(VX*sd_y)
 #beta = c(beta_hat,hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
-beta = c(apply(results$beta_bayes,2,mean)%*%Scale,
-         #beta_hat%*%Scale,
+beta = c(#apply(results$beta_bayes,2,mean)%*%Scale,
+         beta_hat%*%Scale,
          hiernet$beta%*%Scale,
          Family$beta%*%Scale,
          PIE$beta%*%Scale,
@@ -155,7 +155,7 @@ ind = which(df_beta$covariates != "DDE_A" & df_beta$covariates != "TOT_CHOL")
 df_beta_pcbs = df_beta[ind,]
 ggplot(df_beta_pcbs,aes(covariates,beta,shape = factor(model),colour =  factor(model)))+
    geom_point()+
-   geom_errorbar(aes(ymin=q_inf, ymax=q_sup), width=.25)+
+   #geom_errorbar(aes(ymin=q_inf, ymax=q_sup), width=.25)+
    theme(axis.text.x=element_text(size=9, angle=90, vjust=0.3),
          axis.text.y=element_text(size=9),
          plot.title=element_text(size=11))

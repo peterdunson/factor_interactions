@@ -54,6 +54,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
    ps = rgamma(p,as,bs)
    Sigma = diag(1/ps)
    Lambda = matrix(0,p,k)
+   Lambda.T = t(Lambda)
    eta = matrix(rnorm(n*k),n,k)
    meta = matrix(0,n,k)
    veta = diag(rep(1,k))
