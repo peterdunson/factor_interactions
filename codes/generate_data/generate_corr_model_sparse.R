@@ -5,7 +5,7 @@ generate_corr_model_sparse = function(p = 10,n = 100,k_true = 5){
    L = matrix(rnorm(p*k_true,0,1),p,k_true)
    X = matrix(rnorm(n*k_true,0,1),n,k_true)%*%t(L)
    X_test = matrix(rnorm(n*k_true,0,1),n,k_true)%*%t(L)
-   X_big = scale(rbind(X,X_test))8
+   X_big = scale(rbind(X,X_test))
    X = X_big[1:n,]
    X_test = X_big[(n+1):(2*n),]
    
