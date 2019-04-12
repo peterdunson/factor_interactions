@@ -165,3 +165,19 @@ Fr_conv = LambdaLambdaT_hat - W_conv; sqrt(tr(t(Fr_conv)%*%Fr_conv))
 
 
 
+
+####
+p = 10; k_0 = 9; k = 7
+psi = rgamma(p,1,1)
+Lambda = matrix(rnorm(p*k_0),p,k_0)
+LLT = Lambda%*%t(Lambda)
+eig = eigen(LLT); V = eig$vectors; D = eig$values; D_hat = c(D[1:k],rep(0,p-k))
+LLT_hat = V%*%diag(D_hat)%*%solve(V)
+
+
+eig_psi = eigen(LLT + diag(psi))
+eig_psi_hat = eigen(LLT_hat + diag(psi))
+eig_psi_hat$vectors - eig_psi$vectors
+eig_psi$values;eig_psi$values
+
+
