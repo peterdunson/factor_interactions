@@ -22,9 +22,11 @@ library(GIGrvg)
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
-sourceDirectory("~/factor_interactions/codes/functions")
-sourceDirectory("~/factor_interactions/codes/generate_data")
-sourceDirectory("~/factor_interactions/codes/post_processing")
+source("/Users/felpo/factor_interactions/codes/functions/Gibbs_DL.R")
+source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
+source("/Users/felpo/factor_interactions/codes/functions/Gibbs_CUSP.R")
+sourceDirectory("/Users/felpo/factor_interactions/codes/generate_data")
+sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
@@ -82,25 +84,25 @@ for(s in 1:S){
    nrun = 3000; burn = 2000; thin = 5; 
    
    
-   gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
-                          delta_rw = delta_05, epsilon_rw = 0.5,
-                          a = 1/2, k = NULL)
+   # gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
+   #                         delta_rw = delta_05, epsilon_rw = 0.5,
+   #                        a = 10, k = NULL)
    
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = floor(log(p)*3), k = NULL)
+                          a = 1/floor(log(p)*3), k = NULL)
    
    
-   gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
-                          delta_rw = delta_10, epsilon_rw = 0.5, 
-                          k = NULL, alpha_prior = p*floor(log(p)*3)/10,
-                          theta_inf = 0.05)
-   
-   gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
-                              delta_rw = delta_50, epsilon_rw = 0.5, 
-                              k = NULL, alpha_prior = p*floor(log(p)*3)/2,
-                              theta_inf = 0.05)
+   # gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
+   #                        delta_rw = delta_10, epsilon_rw = 0.5, 
+   #                        k = NULL, alpha_prior = p*floor(log(p)*3)/10,
+   #                        theta_inf = 0.05)
+   # 
+   # gibbs_CUSP_50 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
+   #                            delta_rw = delta_50, epsilon_rw = 0.5, 
+   #                            k = NULL, alpha_prior = p*floor(log(p)*3)/2,
+   #                            theta_inf = 0.05)
    
    # acp 
    # acp_1 = gibbs_DL_05$acp;acp_2 = gibbs_DL_k$acp;acp_3 = gibbs_CUSP_10$acp;acp_4 = gibbs_CUSP_50$acp;
@@ -119,8 +121,13 @@ for(s in 1:S){
    #Errors
    errors = compute_errors(hiernet,Family,PIE,RAMP,
                            y,y_test,Omega_true,beta_true,
-                           gibbs_DL_05,gibbs_DL_k,
-                           gibbs_CUSP_10,gibbs_CUSP_50)
+                           gibbs_DL_k,gibbs_DL_k,
+                           gibbs_DL_k,gibbs_DL_k)
+   
+   # errors = compute_errors(hiernet,Family,PIE,RAMP,
+   #                         y,y_test,Omega_true,beta_true,
+   #                         gibbs_DL_05,gibbs_DL_k,
+   #                         gibbs_CUSP_10,gibbs_CUSP_50)
    
    #Error 
    err[s,] = errors$err_insample[-1]
@@ -129,14 +136,23 @@ for(s in 1:S){
    err_beta[s,] = errors$beta_MSE[-1]
    
    #TP and TNs
-   rate_main2 = rate_recovery_maineff(gibbs_DL_05,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
+   rate_main2 = rate_recovery_maineff(gibbs_DL_k,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
                                       hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
-   rate_int2 = rate_recovery_interactions(gibbs_DL_05,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
+   rate_int2 = rate_recovery_interactions(gibbs_DL_k,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
-   rate_main1 = rate_recovery_maineff(gibbs_CUSP_10,gibbs_CUSP_50,alpha = alpha,beta_true = beta_true,
+   rate_main1 = rate_recovery_maineff(gibbs_DL_k,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
                                       hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
-   rate_int1 = rate_recovery_interactions(gibbs_CUSP_10,gibbs_CUSP_50,alpha = alpha,Omega_true=Omega_true,
+   rate_int1 = rate_recovery_interactions(gibbs_DL_k,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
+   
+   # rate_main2 = rate_recovery_maineff(gibbs_DL_05,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
+   #                                    hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
+   # rate_int2 = rate_recovery_interactions(gibbs_DL_05,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
+   #                                        hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
+   # rate_main1 = rate_recovery_maineff(gibbs_CUSP_10,gibbs_CUSP_50,alpha = alpha,beta_true = beta_true,
+   #                                    hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
+   # rate_int1 = rate_recovery_interactions(gibbs_CUSP_10,gibbs_CUSP_50,alpha = alpha,Omega_true=Omega_true,
+   #                                        hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
    
    TP_main[s,] = c(rate_main2$TP[1:2],rate_main1$TP)
    TN_main[s,] = c(rate_main2$TN[1:2],rate_main1$TN)

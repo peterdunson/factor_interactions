@@ -1,4 +1,5 @@
-generate_corr_model_notsparse = function(p = 10,n = 100,k_true = 5){
+generate_corr_model_notsparse = function(p = 10,n = 100,k_true = 5,
+                                         ratio_Om = 0.2,ratio_beta = 0.2){
    
    
    # generate correlated matrix of X
@@ -11,15 +12,14 @@ generate_corr_model_notsparse = function(p = 10,n = 100,k_true = 5){
    
    # true coefficients
    beta_true = numeric(p)
-   beta_true[c(1,3)] = c(1,-1)
-   beta_true[c(1,3,4,7,8)] = c(1,-1,1,-0.4,0.3)
+   nonzero_beta = floor(p*ratio_beta)
+   nonzero_Om = floor((p^2)*ratio_Om*2/3)
+   coeffs = c(-1,-0.8,-0.6,-0.4,1,0.8,0.6,0.4)
+   beta_true[sample(1:p,nonzero_beta)] = sample(coeffs,nonzero_beta)
+   
+   Om_ind = cbind(sample(1:p,nonzero_Om,replace = T),sample(1:p,nonzero_Om,replace = T))
    Omega_true = matrix(0,p,p)
-   Omega_true[1,2] = 1;Omega_true[3,3] = -1;
-   Omega_true[2,3] = -0.5;Omega_true[6,6] = -1;
-   Omega_true[6,7] = -0.2;Omega_true[10,10] = 0.5;
-   Omega_true[4,5] = 0.3;Omega_true[3,4] = -0.3;
-   Omega_true[9,1] = 1.2;Omega_true[1,3] = -0.5;
-   Omega_true[3,7] = 0.4;Omega_true[4,10] = -0.5;
+   Omega_true[Om_ind] = sample(coeffs,nonzero_Om,replace = T)
    Omega_true = Omega_true+t(Omega_true)
    
    # generate output

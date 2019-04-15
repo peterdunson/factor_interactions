@@ -1,4 +1,5 @@
-generate_indep_model_sparse = function(p = 10,n = 100,k_true = NULL){
+generate_indep_model_sparse = function(p = 10,n = 100,k_true = NULL,
+                                       ratio_Om = 0.01,ratio_beta = 0.05){
    
    # generate X
    X = matrix(rnorm(n*p,0,1),n,p)
@@ -9,9 +10,14 @@ generate_indep_model_sparse = function(p = 10,n = 100,k_true = NULL){
    
    # true coefficients
    beta_true = numeric(p)
-   beta_true[c(1,3)] = c(1,-1)
+   nonzero_beta = floor(p*ratio_beta)
+   nonzero_Om = floor((p^2)*ratio_Om*2/3)
+   coeffs = c(-1,-0.8,-0.6,-0.4,1,0.8,0.6,0.4)
+   beta_true[sample(1:p,nonzero_beta)] = sample(coeffs,nonzero_beta)
+   
+   Om_ind = cbind(sample(1:p,nonzero_Om,replace = T),sample(1:p,nonzero_Om,replace = T))
    Omega_true = matrix(0,p,p)
-   Omega_true[1,2] = 1;Omega_true[3,3] = -1;
+   Omega_true[Om_ind] = sample(coeffs,nonzero_Om,replace = T)
    Omega_true = Omega_true+t(Omega_true)
    
    # generate output
