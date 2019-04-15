@@ -108,6 +108,7 @@ abline(v = quantile(beta22_X_DL2[1,2,],probs = c(0.05,0.95)),col="red",lty="dott
 
 xlim = c(-3,3)
 par(mfrow = c(1,3))
+# change breaks thing max(beta1 + 1)
 hist(beta1_X_DL2[1,],freq = F,breaks = seq(-10000,10000,by =0.05),xlim = xlim,
      xlab = "main effect",main = "")
 abline(v = quantile(beta1_X_DL2[1,],probs = c(0.05,0.95)),col="red",lty="dotted")
