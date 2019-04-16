@@ -49,17 +49,23 @@ if(type_model == 0){
    if(sparse == 0){
       data_gen = generate_indep_model_notsparse
       out_name = paste("n",n,"_p",p,"_ind","_notsparse.rds",sep="")
+      k_start = 15
    }else if(sparse == 1){
       data_gen = generate_indep_model_sparse
       out_name = paste("n",n,"_p",p,"_ind","_sparse.rds",sep="")
+      k_start = 15
    }
 }else if(type_model == 1){
    if(sparse == 0){
       data_gen = generate_corr_model_notsparse
       out_name = paste("n",n,"_p",p,"_corr","_notsparse.rds",sep="")
+      k_start = 8+1
+      
    }else if (sparse == 1){
       data_gen = generate_corr_model_sparse
       out_name = paste("n",n,"_p",p,"_corr","_sparse.rds",sep="")
+      k_start = 8+1
+      
    }
 }
 
@@ -78,10 +84,9 @@ for(s in 1:S){
    y = data$y; X = data$X; beta_true = data$beta_true; 
    Omega_true = data$Omega_true;
    y_test = data$y_test; X_test = data$X_test
-   p = ncol(X)
    
    #Factor models
-   nrun = 3000; burn = 2000; thin = 5; 
+   nrun = 5000; burn = 4000; thin = 5; 
    
    
    # gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
@@ -91,7 +96,12 @@ for(s in 1:S){
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = 1/floor(log(p)*3), k = NULL)
+                          a = k_start, k = k_start )
+   
+   # apply(gibbs_DL_k$beta_bayes,2,mean)
+   # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
+   # plot(gibbs_DL_k$beta_bayes[,4],ty="l")
+   # plot(gibbs_DL_k$Omega_bayes[,2,2],ty="l")
    
    
    # gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
@@ -123,6 +133,7 @@ for(s in 1:S){
                            y,y_test,Omega_true,beta_true,
                            gibbs_DL_k,gibbs_DL_k,
                            gibbs_DL_k,gibbs_DL_k)
+   
    
    # errors = compute_errors(hiernet,Family,PIE,RAMP,
    #                         y,y_test,Omega_true,beta_true,
@@ -165,8 +176,9 @@ for(s in 1:S){
 TP_main = TP_main[,c(5:8,1:4)]; TN_main = TN_main[,c(5:8,1:4)]
 TP_int = TP_int[,c(5:8,1:4)]; TN_int = TN_int[,c(5:8,1:4)]
 col_names = c("Hiernet","Family","Pie","RAMP","DL_05","DL_k","CUSP_10","CUSP_50")
-colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = 
-   colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names
+col_names2 = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
+colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
+colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names2
 
 
 list_res = list(

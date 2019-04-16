@@ -1,10 +1,15 @@
 generate_indep_model_sparse = function(p = 10,n = 100,k_true = NULL,
-                                       ratio_Om = 0.01,ratio_beta = 0.05){
+                                       ratio_Om = 0.02,ratio_beta = 0.1){
    
    # generate X
-   X = matrix(rnorm(n*p,0,1),n,p)
-   X_test = matrix(rnorm(n*p,0,1),n,p)
-   X_big = scale(rbind(X,X_test))
+   # X = matrix(rnorm(n*p,0,1),n,p)
+   # X_test = matrix(rnorm(n*p,0,1),n,p)
+   # X_big = scale(rbind(X,X_test))
+   # X = X_big[1:n,]
+   # X_test = X_big[(n+1):(2*n),]
+   
+   W = stats::rWishart(1,p+1,S = diag(p))
+   X_big = scale(mvtnorm::rmvnorm(n*2,sigma=W[,,1]))
    X = X_big[1:n,]
    X_test = X_big[(n+1):(2*n),]
    

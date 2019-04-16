@@ -1,5 +1,5 @@
 generate_corr_model_sparse = function(p = 10,n = 100,k_true = 5,
-                                      ratio_Om = 0.01,ratio_beta = 0.05){
+                                      ratio_Om = 0.02,ratio_beta = 0.1){
    
    
    # generate correlated matrix of X

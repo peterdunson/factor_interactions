@@ -104,7 +104,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
       MM = model.matrix(y~.^2 - 1,as.data.frame(eta))   # perform factorized regression
       X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
       X_reg.T = t(X_reg)
-      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
+      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))/10
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi)/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -117,7 +117,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
       
       # --- Update phi --- #
       eta.T = t(eta)
-      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))
+      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))/10
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%eta.T%*%(y-diag(eta%*%Psi%*%eta.T))/sigmasq_y     # using updated psi
       phi = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
