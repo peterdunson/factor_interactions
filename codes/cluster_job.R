@@ -47,25 +47,48 @@ k_true = as.numeric(args[5])
 
 if(type_model == 0){
    if(sparse == 0){
-      data_gen = generate_indep_model_notsparse
+      ratio_Om = 0.2
+      ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_ind","_notsparse.rds",sep="")
       k_start = 15
+      type = "independent"
+      
    }else if(sparse == 1){
-      data_gen = generate_indep_model_sparse
+      ratio_Om = 0.02
+      ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_ind","_sparse.rds",sep="")
       k_start = 15
+      type = "independent"
+      
    }
 }else if(type_model == 1){
    if(sparse == 0){
-      data_gen = generate_corr_model_notsparse
+      ratio_Om = 0.2
+      ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_corr","_notsparse.rds",sep="")
-      k_start = 8+1
+      k_start = k_true + 1
+      type = "correlated"
       
    }else if (sparse == 1){
-      data_gen = generate_corr_model_sparse
+      ratio_Om = 0.01
+      ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_corr","_sparse.rds",sep="")
-      k_start = 8+1
-      
+      k_start = k_true + 1
+      type = "correlated"
+   }
+}else if(type_model == 2){
+   if(sparse == 0){
+      ratio_Om = 0.2
+      ratio_beta = 0.2
+      out_name = paste("n",n,"_p",p,"_power","_notsparse.rds",sep="")
+      k_start = 15
+      type = "power covariance"
+   }else if (sparse == 1){
+      ratio_Om = 0.01
+      ratio_beta = 0.1
+      out_name = paste("n",n,"_p",p,"_power","_sparse.rds",sep="")
+      k_start = 15
+      type = "power covariance"
    }
 }
 
@@ -80,7 +103,9 @@ delta_05 = delta_k = delta_10 = delta_50 = 0.2
 for(s in 1:S){
    
    # generate the data
-   data = data_gen(p = p,n = n, k = k_true)
+   data = generate_data(p = p,n = n,k_true = k_true,
+                        ratio_Om = ratio_Om,ratio_beta = ratio_beta,
+                        type = type)
    y = data$y; X = data$X; beta_true = data$beta_true; 
    Omega_true = data$Omega_true;
    y_test = data$y_test; X_test = data$X_test
