@@ -27,7 +27,7 @@ generate_corr_model_sparse = function(p = 10,n = 100,k_true = 5,
                   X%*%beta_true+rnorm(n,0,0.5))
    
    y_test = as.vector(diag(X_test%*%Omega_true%*%t(X_test))+
-                  X_test%*%beta_true+rnorm(n,0,0.5))
+                  X_test%*%beta_true+rnorm(n,0,1))
    return(list(y = y, X = X, 
                beta_true = beta_true, 
                Omega_true = Omega_true,

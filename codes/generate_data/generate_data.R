@@ -43,7 +43,7 @@ generate_data = function(p = 10,n = 100,k_true = 5,
    nonzero_beta = floor(p*ratio_beta)
    nonzero_Om = floor((p^2)*ratio_Om*2/3)
    coeffs = c(-1,-0.8,-0.6,-0.4,1,0.8,0.6,0.4)
-   beta_true[sample(1:p,nonzero_beta)] = sample(coeffs,nonzero_beta)
+   beta_true[sample(1:p,nonzero_beta,replace = T)] = sample(coeffs,nonzero_beta,replace = T)
    
    Om_ind = cbind(sample(1:p,nonzero_Om,replace = T),sample(1:p,nonzero_Om,replace = T))
    Omega_true = matrix(0,p,p)
@@ -52,10 +52,10 @@ generate_data = function(p = 10,n = 100,k_true = 5,
    
    # generate output
    y=as.vector(diag(X%*%Omega_true%*%t(X))+
-                  X%*%beta_true+rnorm(n,0,0.5))
+                  X%*%beta_true+rnorm(n,0,1))
    
    y_test = as.vector(diag(X_test%*%Omega_true%*%t(X_test))+
-                         X_test%*%beta_true+rnorm(n,0,0.5))
+                         X_test%*%beta_true+rnorm(n,0,1))
    return(list(y = y, X = X, 
                beta_true = beta_true, 
                Omega_true = Omega_true,

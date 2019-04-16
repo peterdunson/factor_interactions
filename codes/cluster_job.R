@@ -50,14 +50,14 @@ if(type_model == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_ind","_notsparse.rds",sep="")
-      k_start = 15
+      k_start = 12
       type = "independent"
       
    }else if(sparse == 1){
       ratio_Om = 0.02
       ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_ind","_sparse.rds",sep="")
-      k_start = 15
+      k_start = 12
       type = "independent"
       
    }
@@ -81,13 +81,13 @@ if(type_model == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_power","_notsparse.rds",sep="")
-      k_start = 15
+      k_start = 12
       type = "power covariance"
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_power","_sparse.rds",sep="")
-      k_start = 15
+      k_start = 12
       type = "power covariance"
    }
 }
@@ -121,7 +121,7 @@ for(s in 1:S){
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = k_start, k = k_start )
+                          a = 1/2, k = k_start )
    
    # apply(gibbs_DL_k$beta_bayes,2,mean)
    # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
