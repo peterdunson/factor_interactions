@@ -121,7 +121,7 @@ for(s in 1:S){
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = 1/2, k = k_start )
+                          a = 1/k_start, k = k_start )
    
    # apply(gibbs_DL_k$beta_bayes,2,mean)
    # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
