@@ -4,7 +4,7 @@
 library(SASxport)
 library(tidyverse)
 
-setwd("~/Desktop/rechemicalsfriends")
+setwd("~/factor_interactions/data/data_nhanes")
 
 years = c("0910", "1112", "1314") 
 
