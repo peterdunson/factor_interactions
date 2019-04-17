@@ -201,9 +201,9 @@ for(s in 1:S){
 TP_main = TP_main[,c(5:8,1:4)]; TN_main = TN_main[,c(5:8,1:4)]
 TP_int = TP_int[,c(5:8,1:4)]; TN_int = TN_int[,c(5:8,1:4)]
 col_names = c("Hiernet","Family","Pie","RAMP","DL_05","DL_k","CUSP_10","CUSP_50")
-col_names2 = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
+#col_names = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
 colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
-colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names2
+colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names
 
 
 list_res = list(
