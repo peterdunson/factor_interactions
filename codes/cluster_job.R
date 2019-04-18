@@ -121,7 +121,7 @@ for(s in 1:S){
    
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = 1/k_start, k = k_start )
+                          a = 1/2, k = k_start )
    
    # apply(gibbs_DL_k$beta_bayes,2,mean)
    # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
@@ -201,9 +201,9 @@ for(s in 1:S){
 TP_main = TP_main[,c(5:8,1:4)]; TN_main = TN_main[,c(5:8,1:4)]
 TP_int = TP_int[,c(5:8,1:4)]; TN_int = TN_int[,c(5:8,1:4)]
 col_names = c("Hiernet","Family","Pie","RAMP","DL_05","DL_k","CUSP_10","CUSP_50")
-col_names2 = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
+#col_names = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
 colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
-colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names2
+colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names
 
 
 list_res = list(
