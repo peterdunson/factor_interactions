@@ -2,7 +2,7 @@
 library(tidyverse)
 library(stargazer)
 library(plotly)
-#results = readRDS("~/factor_interactions/results_fact2/n500_p25_corr_notsparse.RDS")
+#results = readRDS("~/factor_interactions/results_fact3/n500_p25_ind_sparse.RDS")
 #results = readRDS("~/factor_interactions/results_fact/n100_p10_corr_sparse.RDS")
 #results = readRDS("~/factor_interactions/results_fact/n100_p10_ind_notsparse.RDS")
 #results = readRDS("~/factor_interactions/results_fact/n100_p10_ind_sparse.RDS")
