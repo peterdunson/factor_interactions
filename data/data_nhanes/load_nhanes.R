@@ -78,7 +78,7 @@ creatinine_nhanes = data %>%
    select(URXUCR)
 # URXUCR: Creatinine, urine (mg/dL)
 
-# Only 2010-2011 and 2013-2014
+# Only 2009-2010 and 2011-2012
 pesticides_nhanes = data %>%
    filter(names == "Organochlorine_Pesticides") %>%
    select(data) %>%

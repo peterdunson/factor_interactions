@@ -1,5 +1,6 @@
 #### NHANES data #####
 library(reshape2)
+library(tidyverse)
 library(latex2exp)
 
 # X[,5], log transform creatinine and cholesterol
@@ -45,10 +46,10 @@ y = as.numeric(scale(y))
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
 source("~/factor_interactions/codes/functions/gibbs_DL_confounder.R")
 
-nrun = 1500
-burn = 1000
+nrun = 500
+burn = 400
 k = 7
-gibbs = gibbs_DL_confounder(y, X, Z ,nrun, burn, thin = 1, 
+gibbs = gibbs_DL_confounder_int(y, X, Z ,nrun, burn, thin = 1, 
                             delta_rw = 0.2, epsilon_rw = 0.5,
                             a = 1/k, k = k)
 
@@ -56,6 +57,7 @@ plot(gibbs$alpha_bayes)
 plot(gibbs$beta_bayes[,1])
 
 Omega_hat = apply(gibbs$Omega_bayes, c(2,3), mean)
+Phi_hat = apply(gibbs$Omega_conf, c(2,3), mean)
 alpha_hat = mean(gibbs$alpha_bayes)
 beta_hat = apply(gibbs$beta_bayes,2,mean)
 beta_Z_hat = apply(gibbs$beta_Z,2,mean)
@@ -80,6 +82,24 @@ ggplot(Omega_plot, aes(x = Var2, y = Var1)) +
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") +
    ggtitle(TeX("$\\Omega$"))
+
+
+# plot Phi_hat
+Phi_plot = melt(Phi_hat)
+ggplot(Phi_plot, aes(x = Var2, y = Var1)) + 
+   geom_tile(aes(fill=value), colour="grey20") + 
+   scale_fill_gradient2(low = "#3d52bf", high = "#33961b", mid = "white") +
+   theme(axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         panel.background = element_blank(),
+         axis.ticks = element_blank(),
+         axis.text = element_blank(),
+         legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ") +
+   ggtitle(TeX("$\\Phi$"))
 
 # Competitors 
 hiernet = quiet(Hiernet_fct(y,X))
