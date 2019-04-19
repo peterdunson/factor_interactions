@@ -111,7 +111,7 @@ for(s in 1:S){
    y_test = data$y_test; X_test = data$X_test
    
    #Factor models
-   nrun = 5000; burn = 4000; thin = 5; 
+   nrun = 5000; burn = 4000; thin = 1; 
    
    
    # gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
