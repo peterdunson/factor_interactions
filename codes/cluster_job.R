@@ -15,6 +15,7 @@ library(RCurl)
 library(stargazer)
 library(R.utils)
 library(GIGrvg)
+library(coda)
 
 
 ##### Source Functions from local git repo #####
@@ -123,6 +124,9 @@ for(s in 1:S){
                           delta_rw = delta_k, epsilon_rw = 0.5,
                           a = k_start, k = k_start )
    
+   
+   apply(gibbs_DL_k$beta_bayes,2,effectiveSize)
+   apply(gibbs_DL_k$Omega_bayes,c(2,3),effectiveSize)
    # apply(gibbs_DL_k$beta_bayes,2,mean)
    # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
    # plot(gibbs_DL_k$beta_bayes[,4],ty="l")
@@ -180,6 +184,18 @@ for(s in 1:S){
                                       hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
    rate_int1 = rate_recovery_interactions(gibbs_DL_k,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
+   
+   # Coverage
+   y_pred = matrix(0,nrow = nrun - burn, ncol = length(y))
+   for(h in 1:(nrun - burn)){
+      y_pred[h,] = X%*%gibbs_DL_k$beta_bayes[h,] + 
+         as.vector(diag(X%*%gibbs_DL_k$Omega_bayes[h,,]%*%t(X)))+
+         gibbs_DL_k$alpha_bayes[h] + rnorm(length(y),0,sd = gibbs_DL_k$sigmasq_st[h])
+   }
+   
+   rate_y = coverage_y(y_pred = y_pred,y = y,alpha = alpha)
+   
+   
    
    # rate_main2 = rate_recovery_maineff(gibbs_DL_05,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
    #                                    hiernet$beta,Family$beta,PIE$beta,RAMP$beta)

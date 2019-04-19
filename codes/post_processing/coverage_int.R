@@ -24,3 +24,23 @@ coverage_int = function(beta,Omega,inf = 0.025,sup = 0.975){
   # credible interval
   return(list(beta_cov,Omega_cov))
 }
+
+
+coverage_y = function(y_pred,y,alpha = 0.05){
+   
+   inf = alpha/2
+   sup = 1 - alpha/2
+   n = length(y)
+   y_c = apply(y_pred, 2, function(x) quantile(x,probs = c(inf,sup)))
+
+   y_cov = rep(0,n)
+   for (i in 1:n){
+      if(y[i] < y_c[2,i] & y[i] > y_c[1,i]){
+         y_cov[i] = 1
+      }
+   }
+   
+   #if beta[j] = 1, it means that zero is not contained in the 
+   # credible interval
+   return(y_cov)
+}
