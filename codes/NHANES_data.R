@@ -42,12 +42,17 @@ plot(eigen(cor(X))$values)
 y = log(as.numeric(data_complete$BMI))
 y = as.numeric(scale(y))
 
+set.seed(1)
+ind = sample(1:nrow(X),200)
+X = X[-ind,]; X_test = X[ind,]
+Z = Z[-ind,]; Z_test = Z[ind,]
+y = y[-ind]; y_test = y[ind]
 # Run model
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
 source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
 
-nrun = 500
-burn = 400
+nrun = 5000
+burn = 4000
 k = 7
 gibbs = gibbs_DL_confounder_int(y, X, Z ,nrun, burn, thin = 1, 
                             delta_rw = 0.2, epsilon_rw = 0.5,
