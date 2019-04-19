@@ -24,6 +24,8 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
    if(length(y) != n) stop("Mismatching input lengths")
    
    VX = apply(X, 2, var)          # prepare data matrix
+   dsVX = diag(sqrt(VX))
+   dsVX_inv = diag(1/sqrt(VX))
    X = as.matrix(scale(X))
    
    sp = floor((nrun - burn)/thin)
@@ -34,7 +36,6 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
    prop = 1.00
    as = 1
    bs = 0.3
-   df = 150
    ad1 = 3
    bd1 = 1
    ad2 = 4
@@ -179,8 +180,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
          #Bayesian estimators
          V_n = solve(Lambda.T%*%solve(Sigma)%*%Lambda+diag(rep(1,ncol(Lambda))))
          a_n = V_n%*%Lambda.T%*%solve(Sigma)
-         dsVX = diag(sqrt(VX))
-         Omega_bayes[count,,] = dsVX%*%t(a_n)%*%Psi%*%a_n%*%dsVX
+         Omega_bayes[count,,] = dsVX_inv%*%t(a_n)%*%Psi%*%a_n%*%dsVX_inv
          beta_bayes[count,] = as.vector(t(phi)%*%a_n)
          alpha_bayes[count] = tr(Psi%*%V_n)
          count = count + 1
@@ -206,7 +206,7 @@ gibbs_DL = function(y, X ,nrun, burn, thin = 1,
       }
    }
    
-   beta_bayes = beta_bayes%*%diag(sqrt(VX))
+   beta_bayes = beta_bayes%*%dsVX_inv
    return(list(alpha_bayes = alpha_bayes,
                beta_bayes = beta_bayes,
                Omega_bayes = Omega_bayes,

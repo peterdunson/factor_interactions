@@ -24,9 +24,13 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    if(is.null(k)) k = floor(log(p)*3)
    if(length(y) != n) stop("Mismatching input lengths")
    
-   VX = apply(X, 2, var)          # prepare data matrix
+   VX = apply(X, 2, var)   
+   dsVX = diag(sqrt(VX))
+   dsVX_inv = diag(1/sqrt(VX))
+   # prepare data matrix
    X = as.matrix(scale(X))
-   Z = as.matrix(scale(Z))
+   
+   # BE CAREFUL WITH SCALING OF X and Z
    
    sp = floor((nrun - burn)/thin)
    
@@ -36,7 +40,6 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    prop = 1.00
    as = 1
    bs = 0.3
-   df = 150
    ad1 = 3
    bd1 = 1
    ad2 = 4
@@ -54,13 +57,14 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
    Psi_st = array(0,c(sp,k,k))
    acp = numeric(n)
    
-   sigmasq_y = mean(y^2)/10                  # initial values
+   sigmasq_y = 1                 # initial values
    phi = numeric(k)
    ps = rgamma(p,as,bs)
    Sigma = diag(1/ps)
    beta_Z = numeric(l)
    mu_z = Z%*%beta_Z
    Lambda = matrix(0,p,k)
+   Lambda.T = t(Lambda)
    eta = matrix(rnorm(n*k),n,k)
    meta = matrix(0,n,k)
    veta = diag(rep(1,k))
@@ -127,28 +131,16 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       Psi = Psi + t(Psi)
       diag(Psi) = lambda_diag
       
-      # MM = model.matrix(y~.^2 - 1,as.data.frame(eta))   # perform factorized regression
-      # X_reg = cbind(MM[,(k+1):ncol(MM)])
-      # X_reg.T = t(X_reg)
-      # Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
-      # Vcsi = solve(Lambda_n)
-      # Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z)/sigmasq_y
-      # csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
-      # lambda = csi
-      # Psi[lower.tri(Psi)] = lambda/2
-      # Psi[upper.tri(Psi)] = 0
-      # Psi = Psi + t(Psi)
-      # diag(Psi) = 0
       
       # --- Update phi --- #
       eta.T = t(eta)
-      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))/10
+      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%eta.T%*%(y-diag(eta%*%Psi%*%eta.T)-mu_z)/sigmasq_y     # using updated psi
       phi = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
       
       # --- Update beta_Z --- #
-      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))/10
+      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%t(Z)%*%(y-diag(eta%*%Psi%*%eta.T)-eta%*%phi)/sigmasq_y     # using updated psi
       beta_Z = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
@@ -211,8 +203,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
          #Bayesian estimators
          V_n = solve(Lambda.T%*%solve(Sigma)%*%Lambda+diag(rep(1,ncol(Lambda))))
          a_n = V_n%*%Lambda.T%*%solve(Sigma)
-         dsVX = diag(sqrt(VX))
-         Omega_bayes[count,,] = dsVX%*%t(a_n)%*%Psi%*%a_n%*%dsVX
+         Omega_bayes[count,,] = dsVX_inv%*%t(a_n)%*%Psi%*%a_n%*%dsVX_inv
          beta_bayes[count,] = as.vector(t(phi)%*%a_n)
          alpha_bayes[count] = tr(Psi%*%V_n)
          beta_Z_bayes[count,] = beta_Z
@@ -224,14 +215,14 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       if (i%%100==0){
          print(i)
          acp_mean = mean(acp)/100
-         print(acp_mean)
+         #print(acp_mean)
          if(acp_mean > 0.3){
             delta_rw = delta_rw*2
          }else if(acp_mean < 0.2){
             delta_rw = delta_rw*2/3
          }
          acp = numeric(n)
-         print(delta_rw)
+         #print(delta_rw)
          #print(paste("time for last 100 iterations:",round(as.numeric(Sys.time()-t),0),
          #            "seconds",sep=" "))
          #t = Sys.time()
@@ -241,7 +232,7 @@ gibbs_DL_confounder = function(y, X, Z ,nrun, burn, thin = 1,
       }
    }
    
-   beta_bayes = beta_bayes%*%diag(sqrt(VX))
+   beta_bayes = beta_bayes%*%dsVX_inv
    return(list(alpha_bayes = alpha_bayes,
                beta_bayes = beta_bayes,
                Omega_bayes = Omega_bayes,

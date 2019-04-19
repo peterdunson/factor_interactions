@@ -141,5 +141,54 @@ chol_nhanes = data %>%
 
 data_nhanes = data.frame(chem_nhanes,people_nhanes,bmi_nhanes,
                          creatinine_nhanes,chol_nhanes,pesticides_nhanes)
-save(data_nhanes, file = "nhanes.RData")
+
+# Rename the variables=
+colnames(data_nhanes)[colnames(data_nhanes)=="URXUCR"] = "Creatinine"
+colnames(data_nhanes)[colnames(data_nhanes)=="LBXTC"] = "TotChol"
+colnames(data_nhanes)[colnames(data_nhanes)=="RIDAGEYR"] = "Age"
+colnames(data_nhanes)[colnames(data_nhanes)=="RIAGENDR"] = "Gender"
+colnames(data_nhanes)[colnames(data_nhanes)=="SEQN"] = "ID"
+colnames(data_nhanes)[colnames(data_nhanes)=="BMXBMI"] = "BMI"
+colnames(data_nhanes)[colnames(data_nhanes)=="BMXWAIST"] = "WAIST"
+colnames(data_nhanes)[colnames(data_nhanes)=="INDFMPIR"] = "Ratio_income_poverty"
+colnames(data_nhanes)[colnames(data_nhanes)=="RIDRETH1"] = "Race"
+
+quantile(data_nhanes$URXMBP)
+quantile(data_nhanes$URXMIB)
+
+#log transform
+data_nhanes$URXMBP = log(data_nhanes$URXMBP)
+data_nhanes$URXMIB = log(data_nhanes$URXMIB)
+data_nhanes$URXMEP = log(data_nhanes$URXMEP)
+data_nhanes$URXMZP = log(data_nhanes$URXMZP)
+data_nhanes$URXMCP = log(data_nhanes$URXMCP)
+data_nhanes$URXECP = log(data_nhanes$URXECP)
+data_nhanes$URXMHH = log(data_nhanes$URXMHH)
+data_nhanes$URXMOH = log(data_nhanes$URXMOH)
+data_nhanes$URXMHP = log(data_nhanes$URXMHP)
+data_nhanes$URX14D = log(data_nhanes$URX14D)
+data_nhanes$URXDCB = log(data_nhanes$URXDCB)
+
+# save data
+save(data_nhanes, file = "nhanes_complete.RData")
+
+#log transform + creatanine adjusted
+log_creat = log(data_nhanes$Creatinine)
+data_nhanes$URXMBP = data_nhanes$URXMBP - log_creat
+data_nhanes$URXMIB = data_nhanes$URXMIB - log_creat
+data_nhanes$URXMEP = data_nhanes$URXMEP - log_creat
+data_nhanes$URXMZP = data_nhanes$URXMZP - log_creat
+data_nhanes$URXMCP = data_nhanes$URXMCP - log_creat
+data_nhanes$URXECP = data_nhanes$URXECP - log_creat
+data_nhanes$URXMHH = data_nhanes$URXMHH - log_creat
+data_nhanes$URXMOH = data_nhanes$URXMOH - log_creat
+data_nhanes$URXMHP = data_nhanes$URXMHP - log_creat
+data_nhanes$URX14D = data_nhanes$URX14D - log_creat
+data_nhanes$URXDCB = data_nhanes$URXDCB - log_creat
+
+# save log transformed
+save(data_nhanes, file = "nhanes_complete_adj.RData")
+
+
+
 
