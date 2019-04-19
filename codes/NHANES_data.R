@@ -44,7 +44,7 @@ y = as.numeric(scale(y))
 
 # Run model
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
-source("~/factor_interactions/codes/functions/gibbs_DL_confounder.R")
+source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
 
 nrun = 500
 burn = 400
