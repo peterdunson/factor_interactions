@@ -186,15 +186,15 @@ for(s in 1:S){
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
    
    # Coverage
-   y_pred = matrix(0,nrow = nrun - burn, ncol = length(y))
-   for(h in 1:(nrun - burn)){
-      y_pred[h,] = X%*%gibbs_DL_k$beta_bayes[h,] + 
-         as.vector(diag(X%*%gibbs_DL_k$Omega_bayes[h,,]%*%t(X)))+
-         gibbs_DL_k$alpha_bayes[h] + rnorm(length(y),0,sd = gibbs_DL_k$sigmasq_st[h])
-   }
-   
-   rate_y = coverage_y(y_pred = y_pred,y = y,alpha = alpha)
-   
+   # y_pred = matrix(0,nrow = nrun - burn, ncol = length(y))
+   # for(h in 1:(nrun - burn)){
+   #    y_pred[h,] = X%*%gibbs_DL_k$beta_bayes[h,] + 
+   #       as.vector(diag(X%*%gibbs_DL_k$Omega_bayes[h,,]%*%t(X)))+
+   #       gibbs_DL_k$alpha_bayes[h] + rnorm(length(y),0,sd = gibbs_DL_k$sigmasq_st[h])
+   # }
+   # 
+   # rate_y = coverage_y(y_pred = y_pred,y = y,alpha = alpha)
+   # mean(rate_y)
    
    
    # rate_main2 = rate_recovery_maineff(gibbs_DL_05,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
