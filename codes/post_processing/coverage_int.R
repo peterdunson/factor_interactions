@@ -11,9 +11,10 @@ coverage_int = function(beta,Omega,inf = 0.025,sup = 0.975){
     }
   }
   
-  Omega_cov = matrix(0,p,p)
+  p = dim(Omega)[2]; q = dim(Omega)[3]
+  Omega_cov = matrix(0,p,q)
   for (j in 1:p){
-    for(k in 1:p){
+    for(k in 1:q){
       if(sign(Omega_c[1,j,k])==sign(Omega_c[2,j,k])){
         Omega_cov[j,k] = 1
       }

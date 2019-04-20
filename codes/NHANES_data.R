@@ -44,9 +44,9 @@ y = as.numeric(scale(y))
 
 set.seed(1)
 ind = sample(1:nrow(X),200)
-X = X[-ind,]; X_test = X[ind,]
-Z = Z[-ind,]; Z_test = Z[ind,]
-y = y[-ind]; y_test = y[ind]
+X_test = X[ind,]; X = X[-ind,]; 
+Z_test = Z[ind,]; Z = Z[-ind,]; 
+y_test = y[ind]; y = y[-ind]; 
 # Run model
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
 source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
@@ -70,6 +70,8 @@ beta_Z_hat = apply(gibbs$beta_Z,2,mean)
 colnames(Omega_hat) = rownames(Omega_hat) = colnames(X)
 apply(gibbs$beta_bayes,2,quantile)
 plot(gibbs$Omega_bayes[,1,1],ty="l")
+plot(gibbs$Omega_conf[,1,1],ty="l")
+plot(gibbs$Omega_conf[,1,2],ty="l")
 
 # plot omega_hat
 Omega_plot = melt(Omega_hat)
@@ -107,9 +109,9 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
    ggtitle(TeX("$\\Phi$"))
 
 # Competitors 
-hiernet = quiet(Hiernet_fct(y,X))
-Family = quiet(FAMILY_fct(y,X))
-RAMP = quiet(RAMP_fct(y,X))
+hiernet = quiet(Hiernet_fct(y,X,X_test,y_test))
+Family = quiet(FAMILY_fct(y,X,X_test,y_test))
+RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
 # PIE = RAMP
 
 hist(RAMP$err - y)
@@ -134,6 +136,28 @@ Omega_hat01 = cov[[2]]
 colnames(Omega_hat01) = rownames(Omega_hat01) = colnames(X)
 Omega_plot = melt(Omega_hat01)
 ggplot(Omega_plot, aes(x = Var2, y = Var1)) + 
+   geom_tile(aes(fill=value), colour="grey20") + 
+   scale_fill_gradient2(low = "white", high = "black") +
+   theme(axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         panel.background = element_blank(),
+         axis.ticks = element_blank(),
+         axis.text = element_blank(),
+         legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ") +
+   ggtitle(TeX("$\\Omega$"))
+
+
+source("~/factor_interactions/codes/post_processing/coverage_int.R")
+cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_conf)
+Phi01 = cov[[2]]
+colnames(Phi01) = colnames(Z) 
+rownames(Phi01) = colnames(X)
+Phi_plot = melt(Phi01)
+ggplot(Phi_plot, aes(x = Var2, y = Var1)) + 
    geom_tile(aes(fill=value), colour="grey20") + 
    scale_fill_gradient2(low = "white", high = "black") +
    theme(axis.title.x = element_blank(),

@@ -98,7 +98,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
          
          
          phi_upd = as.vector(phi + Phi%*%Z[h,])
-         aMH_upd = aMH + (Phi%*%Z[i,])%*%t(Phi%*%Z[i,])/sigmasq_y
+         aMH_upd = aMH + (Phi%*%Z[h,])%*%t(Phi%*%Z[h,])/sigmasq_y
          eta_star = bayesSurv::rMVNorm(1,eta[h,],diag(k)*delta_rw)
          eta_star.T = t(eta_star)     # avoid repeated transpose calls
          eta.T = t(eta[h,])
@@ -130,7 +130,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
       eta.T = t(eta)
       XZ_reg = model.matrix(y~ eta:Z - 1,as.data.frame(cbind(eta,Z)))
       XZ_reg.T = t(XZ_reg)
-      Lambda_n = XZ_reg.T%*%XZ_reg/sigmasq_y + diag(rep(1,ncol(XZ_reg)))*10
+      Lambda_n = XZ_reg.T%*%XZ_reg/sigmasq_y + diag(rep(1,ncol(XZ_reg)))*5
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%XZ_reg.T%*%(y-eta%*%phi-mu_z-diag(eta%*%Psi%*%eta.T))/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -141,7 +141,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
       MM = model.matrix(y~.^2 - 1,as.data.frame(eta))*10   # perform factorized regression
       X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
       X_reg.T = t(X_reg)
-      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))
+      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))*5
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z - diag(eta%*%Phi%*%Z.T))/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -154,7 +154,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
       
       
       # --- Update phi --- #
-      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))*10
+      Lambda_n = eta.T%*%eta/sigmasq_y + diag(rep(1,ncol(eta)))*5
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%eta.T%*%(y-diag(eta%*%Psi%*%eta.T)-mu_z-diag(eta%*%Phi%*%Z.T))/sigmasq_y     # using updated psi
       phi = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
