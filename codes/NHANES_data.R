@@ -1,33 +1,40 @@
 #### NHANES data #####
+
+# Load libraries and functions
 library(reshape2)
 library(tidyverse)
 library(latex2exp)
+source("~/factor_interactions/codes/post_processing/coverage_int.R")
+source("~/factor_interactions/codes/functions/gibbs_DL.R")
+source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
+source("~/factor_interactions/codes/functions/Competitors_fcts.R")
+source("~/factor_interactions/codes/functions/quiet.R")
+source("~/factor_interactions/codes/post_processing/compute_errors_data.R")
+source("~/factor_interactions/codes/post_processing/mcrotfact.R")
+source("~/factor_interactions/codes/post_processing/clustalignplus.R")
 
-# X[,5], log transform creatinine and cholesterol
-# CHANGE DISTRIBUTION OF Y TO HAVE A T DIST
-# ADD INTERACTIONS between Gender and Chemicals
 
 
-# read data
+# --- Read data --- #
 load("~/factor_interactions/data/data_nhanes/nhanes_complete.RData")
 head(data_nhanes)
 
-# Chemicals in the study
+# --- Chemicals in the study --- #
 chemicals = subset(data_nhanes, select = c(URXMBP,URXMIB,URXMEP,URXMZP,URXMCP,
                                           URXECP,URXMHH,URXMOH,URXMHP,
                                           URXDCB,URX14D))
 C = cor(chemicals)
 eig = eigen(C)
 
-# considere only complete data
+#considere only complete data
 data_complete = data_nhanes[complete.cases(data_nhanes),]
 
-# factorize Race 
+# factorize Race
 data_complete$Race = as.factor(data_complete$Race)
 Race = model.matrix(WAIST~Race - 1,data = data_complete)
 data_complete$Race = Race
 
-# create X and y for FIN
+# --- create X and y for FIN --- #
 X = subset(data_complete,select = 
               c(URXMBP,URXMIB,URXMEP,URXMZP,URXMCP,
                 URXECP,URXMHH,URXMOH,URXMHP,
@@ -38,8 +45,7 @@ X = scale(X,scale = F)
 Z = as.matrix(cbind(data_complete$Race,data_complete$Gender,
                     data_complete$age))
 plot(eigen(cor(X))$values)
-# log of instogram looks much nicer
-y = log(as.numeric(data_complete$BMI))
+y = log10(as.numeric(data_complete$BMI))
 y = as.numeric(scale(y))
 
 set.seed(1)
@@ -47,16 +53,14 @@ ind = sample(1:nrow(X),200)
 X_test = X[ind,]; X = X[-ind,]; 
 Z_test = Z[ind,]; Z = Z[-ind,]; 
 y_test = y[ind]; y = y[-ind]; 
-# Run model
-source("~/factor_interactions/codes/functions/gibbs_DL.R")
-source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
 
-nrun = 5000
-burn = 4000
+# --- Run model --- #
+nrun = 7500
+burn = 5000
 k = 7
-gibbs = gibbs_DL_confounder_int(y, X, Z ,nrun, burn, thin = 1, 
+gibbs = gibbs_DL_confounder_int(y, X, Z ,nrun, burn, thin = 5, 
                             delta_rw = 0.2, epsilon_rw = 0.5,
-                            a = 1/k, k = k)
+                            a = 1/2, k = k)
 
 plot(gibbs$alpha_bayes)
 plot(gibbs$beta_bayes[,1])
@@ -73,64 +77,79 @@ plot(gibbs$Omega_bayes[,1,1],ty="l")
 plot(gibbs$Omega_conf[,1,1],ty="l")
 plot(gibbs$Omega_conf[,1,2],ty="l")
 
-# plot omega_hat
-Omega_plot = melt(Omega_hat)
+# --- plot omega_hat --- #
+cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_bayes)
+p = ncol(X)
+Omega_plot = matrix(0,p,p);
+ind = which(cov[[2]] ==1 )
+Omega_plot[ind] = Omega_hat[ind]
+colnames(Omega_plot) = rownames(Omega_plot) = colnames(X)
+Omega_plot = Omega_plot[1:(p-2),1:(p-2)]
+label = "Interactions Chemicals"
+Omega_plot = melt(Omega_plot)
+Omega_plot = cbind(Omega_plot,label)
 ggplot(Omega_plot, aes(x = Var2, y = Var1)) + 
    geom_tile(aes(fill=value), colour="grey20") + 
-   scale_fill_gradient2(low = "#3d52bf", high = "#33961b", mid = "white") +
+   scale_fill_gradient2(low = "#191970", high = "#006400", mid = "white") +
    theme(axis.title.x = element_blank(),
          axis.title.y = element_blank(),
          panel.grid.major = element_blank(),
          panel.border = element_blank(),
          panel.background = element_blank(),
          axis.ticks = element_blank(),
-         axis.text = element_blank(),
+         #axis.text = element_blank(),
+         axis.text.x = element_text(angle = 90, hjust = 1),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
-   labs(fill = " ") +
-   ggtitle(TeX("$\\Omega$"))
+   labs(fill = " ") + 
+   ggtitle(TeX("Interactions Chemicals"))
 
 
-# plot Phi_hat
-Phi_plot = melt(Phi_hat)
+# --- plot Phi_hat --- #
+cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_conf)
+#Phi_plot = matrix(0,p,ncol(Phi_hat)); 
+Phi_plot = Phi_hat
+rownames(Phi_plot) = colnames(X)
+colnames(Phi_plot) = colnames(Z)
+#Phi_plot[cov[[2]]] = Phi_plot[cov[[2]]]
+Phi_plot = melt(Phi_plot)
 ggplot(Phi_plot, aes(x = Var2, y = Var1)) + 
    geom_tile(aes(fill=value), colour="grey20") + 
-   scale_fill_gradient2(low = "#3d52bf", high = "#33961b", mid = "white") +
+   scale_fill_gradient2(low = "#191970", high = "#006400", mid = "white") +
    theme(axis.title.x = element_blank(),
          axis.title.y = element_blank(),
          panel.grid.major = element_blank(),
          panel.border = element_blank(),
          panel.background = element_blank(),
          axis.ticks = element_blank(),
-         axis.text = element_blank(),
+         #axis.text = element_blank(),
+         axis.text.x = element_text(angle = 90, hjust = 1),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") +
-   ggtitle(TeX("$\\Phi$"))
+   ggtitle(TeX("Interactions X-Z"))
 
-# Competitors 
-hiernet = quiet(Hiernet_fct(y,X,X_test,y_test))
-Family = quiet(FAMILY_fct(y,X,X_test,y_test))
+# --- Competitors --- #
+W = cbind(X,Z)
+W_test = cbind(X_test,Z_test)
+hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
+Family = quiet(FAMILY_fct(y,W,W_test,y_test))
 RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
 # PIE = RAMP
 
-hist(RAMP$err - y)
-hist(y_hat)
-hist(y)
 
-# Compute errors 
-X_test = X; y_test = y - mean(gibbs$alpha_bayes) - Z%*%apply(gibbs$beta_Z,2,mean)
-errors = compute_errors(hiernet,Family,RAMP,RAMP,
-                        y,y_test,Omega_hat,apply(gibbs$beta_bayes, 2, mean),
+# --- Compute errors --- #
+errors = compute_errors_data(hiernet,Family,RAMP,RAMP,
+                        y = y,y_test = y_test,X_test = X_test,Z_test = Z_test,
                         gibbs)
 
 y_hat = X%*%beta_hat + 
    as.vector(diag(X%*%Omega_hat%*%t(X))) +
-   alpha_hat + Z%*%beta_Z_hat
+   alpha_hat + Z%*%beta_Z_hat +
+   as.vector(diag(X%*%Phi_hat%*%t(Z)))
 
 
-# non zero interactions
-source("~/factor_interactions/codes/post_processing/coverage_int.R")
+# --- non zero interactions --- #
 cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_bayes)
 Omega_hat01 = cov[[2]]
 colnames(Omega_hat01) = rownames(Omega_hat01) = colnames(X)
@@ -144,14 +163,14 @@ ggplot(Omega_plot, aes(x = Var2, y = Var1)) +
          panel.border = element_blank(),
          panel.background = element_blank(),
          axis.ticks = element_blank(),
-         axis.text = element_blank(),
+         #axis.text = element_blank(),
+         axis.text.x = element_text(angle = 90, hjust = 1),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") +
    ggtitle(TeX("$\\Omega$"))
 
 
-source("~/factor_interactions/codes/post_processing/coverage_int.R")
 cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_conf)
 Phi01 = cov[[2]]
 colnames(Phi01) = colnames(Z) 
@@ -173,3 +192,54 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
    ggtitle(TeX("$\\Omega$"))
 
 
+# --- Postprocessing Lambda --- #
+lambda_sample = gibbs$Lambda[,1:(p-2),]
+lambda_sample = lapply(1:500, function(ind) lambda_sample[ind,,])
+sample_mean = reduce(lambda_sample, `+`)/length(lambda_sample)
+rownames(sample_mean) = colnames(X[,1:(p-2)])
+rotated = mcrotfact(lambda_sample, method = "varimax", file = FALSE)
+aligned = clustalignplus(rotated$samples, itermax = 500)
+
+
+label = "Sample Mean"
+SampleMean = cbind(melt(sample_mean), label)
+label = "Aligned Sample Mean"
+ProcessMean = Reduce("+", aligned)/length(aligned)
+rownames(ProcessMean) = colnames(X[,1:(p-2)])
+ProcessMean = cbind(melt(ProcessMean), label)
+ggdf = rbind(SampleMean, ProcessMean)
+ggplot(ggdf, aes(x = Var2, y = Var1)) + 
+   facet_grid(cols = vars(label)) +
+   geom_tile(aes(fill=value), colour="grey20") + 
+   scale_fill_gradient2(low = "#800000", high = "#006400", mid = "white") +
+   theme(axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         panel.background = element_blank(),
+         axis.ticks = element_blank(),
+         #axis.text = element_blank(),
+         legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ")
+
+
+# Correlation plot
+Cor_plot = cor(X[,1:(p-2)])
+colnames(Cor_plot) = rownames(Cor_plot) = colnames(X[,1:(p-2)])
+Cor_plot = melt(Cor_plot)
+ggplot(Cor_plot, aes(x = Var2, y = Var1)) + 
+   geom_tile(aes(fill=value), colour="grey20") + 
+   scale_fill_gradient2(low = "#191970", high = "#006400", mid = "white") +
+   theme(axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         panel.background = element_blank(),
+         axis.ticks = element_blank(),
+         #axis.text = element_blank(),
+         axis.text.x = element_text(angle = 90, hjust = 1),
+         legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ") + 
+   ggtitle(TeX("Correlation matrix"))

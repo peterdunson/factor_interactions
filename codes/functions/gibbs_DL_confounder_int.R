@@ -55,6 +55,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
    Omega_bayes = array(0,c(sp,p,p))  # sample storage memory allocation
    Omega_conf = array(0,c(sp,p,l))
    tau_st = array(0,c(sp,p))
+   Lambda_st = array(0,c(sp,p,k))
    sigmasq_st = numeric(sp)
    alpha_bayes = numeric(sp)
    beta_bayes = matrix(0,sp,p)
@@ -138,10 +139,10 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
       
       
       # --- Update Psi --- #
-      MM = model.matrix(y~.^2 - 1,as.data.frame(eta))*10   # perform factorized regression
+      MM = model.matrix(y~.^2 - 1,as.data.frame(eta))  # perform factorized regression
       X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
       X_reg.T = t(X_reg)
-      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))*5
+      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))*15
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z - diag(eta%*%Phi%*%Z.T))/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -160,7 +161,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
       phi = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
       
       # --- Update beta_Z --- #
-      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))*10
+      Lambda_n = t(Z)%*%Z/sigmasq_y + diag(rep(1,ncol(Z)))*5
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%t(Z)%*%(y-diag(eta%*%Psi%*%eta.T)-eta%*%phi-diag(eta%*%Phi%*%Z.T))/sigmasq_y     # using updated psi
       beta_Z = bayesSurv::rMVNorm(n = 1, mean = Mcsi, Sigma = Vcsi)
@@ -230,6 +231,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
          beta_Z_bayes[count,] = beta_Z
          Psi_st[count,,] = Psi
          phi_st[count,] = phi
+         Lambda_st[count,,] = dsVX %*% Lambda
          count = count + 1
       }
       
@@ -259,6 +261,7 @@ gibbs_DL_confounder_int = function(y, X, Z ,nrun, burn, thin = 1,
                Omega_bayes = Omega_bayes,
                beta_Z = beta_Z_bayes,
                phi = phi_st,
+               Lambda = Lambda_st,
                Psi = Psi_st,
                Omega_conf = Omega_conf,
                acp = acp/(nrun-burn),

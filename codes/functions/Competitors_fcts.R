@@ -1,7 +1,6 @@
 ####### Competitors Functions ######
 library(hierNet)
 library(FAMILY)
-library(PIE)
 library(RAMP)
 library('glmnet')
 
@@ -67,25 +66,6 @@ FAMILY_fct = function(y, X, X_test = X, y_test = y,
 
 
 
-PIE_fct = function(y, X, X_test = X, y_test = y){
-   
-   p = ncol(X)
-   n = nrow(X)
-   
-   #estimation
-   beta = as.vector(coef(cv.glmnet(X,y,nfolds = 5),
-                             s="lambda.min"))[-1];  
-   Omega = PIE(X,y-X%*%beta)
-   
-   #prediction
-   err = y-X%*%beta - as.vector(diag(X%*%Omega%*%t(X)))
-   err_pred = y_test-X_test%*%beta - 
-      as.vector(diag(X_test%*%Omega%*%t(X_test)))
-   
-   return(list(beta = beta,Omega = Omega,
-               err = err,err_pred = err_pred))
-}
-
 
 RAMP_fct = function(y, X, X_test = X, y_test = y, hier = "Strong",
                     max.iter = 100){
@@ -132,4 +112,25 @@ RAMP_fct = function(y, X, X_test = X, y_test = y, hier = "Strong",
    return(list(beta = beta,Omega = Omega,
                err = err,err_pred = err_pred))
    
+}
+
+
+library(PIE)
+PIE_fct = function(y, X, X_test = X, y_test = y){
+   
+   p = ncol(X)
+   n = nrow(X)
+   
+   #estimation
+   beta = as.vector(coef(cv.glmnet(X,y,nfolds = 5),
+                         s="lambda.min"))[-1];  
+   Omega = PIE(X,y-X%*%beta)
+   
+   #prediction
+   err = y-X%*%beta - as.vector(diag(X%*%Omega%*%t(X)))
+   err_pred = y_test-X_test%*%beta - 
+      as.vector(diag(X_test%*%Omega%*%t(X_test)))
+   
+   return(list(beta = beta,Omega = Omega,
+               err = err,err_pred = err_pred))
 }
