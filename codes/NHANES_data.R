@@ -138,7 +138,7 @@ W_test = cbind(X_test,Z_test)
 hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
 Family = quiet(FAMILY_fct(y,W,W_test,y_test))
 RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
-# PIE = RAMP
+PIE = quiet(PIE_fct(y,X,X_test,y_test))
 
 
 # --- Compute errors --- #
@@ -246,3 +246,40 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
    ggtitle(TeX("Correlation matrix"))
+
+
+# Plot main effects
+names = as.character(colnames(X)[1:(p-2)])
+label = "FIN"
+gibbs_plot = data.frame(Values = beta_hat[1:(p-2)], 
+                       Variables = names,
+                       model = label)
+label = "PIE"
+PIE_plot = data.frame(Values = PIE$beta[1:(p-2)], Variables = names,model = label)
+label = "RAMP"
+RAMP_plot = data.frame(Values = RAMP$beta[1:(p-2)], Variables = names,model = label)
+label = "Family"
+Family_plot = data.frame(Values = Family$beta[1:(p-2)], Variables = names,model = label)
+label = "HierNet"
+hiernet_plot = data.frame(Values = hiernet$beta[1:(p-2)], Variables = names,model = label)
+
+beta_plot = rbind(gibbs_plot,PIE_plot,RAMP_plot,Family_plot,hiernet_plot)
+ggplot(beta_plot, aes(x = Variables, y = Values, color = model,
+                      shape = model))+
+   geom_point(size = 2.3)+
+   theme(axis.title.x = element_blank(),
+         #axis.title.y = element_blank(),
+         #panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         #panel.background = element_blank(),
+         #axis.ticks = element_blank(),
+         #axis.text = element_blank(),
+         text = element_text(size=17),
+         axis.text.x = element_text(angle = 90, hjust = 1),
+         #legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ") + 
+   ggtitle(TeX("Estimated Main Effects"))
+
+
+
