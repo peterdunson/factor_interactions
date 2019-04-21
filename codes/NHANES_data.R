@@ -41,6 +41,9 @@ X = subset(data_complete,select =
                 URXDCB,URX14D,
                 TotChol,Creatinine))%>%
    as.matrix
+colnames(X) = c("Mono-n-butyl","Mono-isobutyl","Mono-ethyl","Mono-benzyl",
+                "Mono-cyclohexyl","Mono-carbox","Mono-hydrox","Mono-oxohexyl",
+                "Mono-hexyl","2,5-dich","2,4-dich","TotChol","Creatinine")
 X = scale(X,scale = F)
 Z = as.matrix(cbind(data_complete$Race,data_complete$Gender,
                     data_complete$age))
