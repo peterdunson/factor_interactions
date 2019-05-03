@@ -4,6 +4,7 @@
 library(reshape2)
 library(tidyverse)
 library(latex2exp)
+library(magick)
 source("~/factor_interactions/codes/post_processing/coverage_int.R")
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
 source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
@@ -227,6 +228,38 @@ ggplot(ggdf, aes(x = Var2, y = Var1)) +
    labs(fill = " ")
 
 
+# --- GIF lambda --- #
+#lambda_sample
+#aligned
+factl = array(unlist(lambda_sample), dim = c(11,7,500))
+img = image_graph(600, 340, res = 96)
+for(i in 1:500){
+   curr = factl[,,i,  drop = F] / max(factl)
+   rownames(curr) = colnames(X[,1:(p-2)])
+   SampleMean = melt(curr)
+   plot = ggplot(SampleMean, aes(x = Var2, y = Var1)) + 
+      geom_tile(aes(fill=value), colour="grey20") + 
+      scale_fill_gradient2(low = "#800000", high = "#006400", mid = "white") +
+      theme(axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            axis.ticks = element_blank(),
+            #axis.text = element_blank(),
+            legend.title = element_text(),
+            plot.title = element_text(hjust = 0.5)) + 
+      labs(fill = " ")
+   print(plot)
+
+   #lambda.add =  image_raster(plot)
+   #lambda.image =  c(lambda.image, lambda.add)
+}
+lambda.animated = image_animate(img, fps = 20, dispose = "background")
+image_write(lambda.animated, "LambdaAnimation.gif")
+
+
+
 # Correlation plot
 Cor_plot = cor(X[,1:(p-2)])
 colnames(Cor_plot) = rownames(Cor_plot) = colnames(X[,1:(p-2)])
@@ -249,19 +282,27 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
 
 
 # Plot main effects
+#
 names = as.character(colnames(X)[1:(p-2)])
 label = "FIN"
+q_sup = apply(gibbs$beta_bayes,2,function(x) quantile(x,probs = 0.95))
+q_inf = apply(gibbs$beta_bayes,2,function(x) quantile(x,probs = 0.05))
 gibbs_plot = data.frame(Values = beta_hat[1:(p-2)], 
                        Variables = names,
-                       model = label)
+                       model = label,
+                       q_inf = q_inf[1:(p-2)], q_sup = q_sup[1:(p-2)])
 label = "PIE"
-PIE_plot = data.frame(Values = PIE$beta[1:(p-2)], Variables = names,model = label)
+PIE_plot = data.frame(Values = PIE$beta[1:(p-2)], Variables = names,model = label, q_inf = PIE$beta[1:(p-2)]
+                      ,q_sup = PIE$beta[1:(p-2)])
 label = "RAMP"
-RAMP_plot = data.frame(Values = RAMP$beta[1:(p-2)], Variables = names,model = label)
+RAMP_plot = data.frame(Values = RAMP$beta[1:(p-2)], Variables = names,model = label, q_inf = RAMP$beta[1:(p-2)]
+                       ,q_sup = RAMP$beta[1:(p-2)])
 label = "Family"
-Family_plot = data.frame(Values = Family$beta[1:(p-2)], Variables = names,model = label)
+Family_plot = data.frame(Values = Family$beta[1:(p-2)], Variables = names,model = label,q_inf = Family$beta[1:(p-2)]
+                         ,q_sup = Family$beta[1:(p-2)])
 label = "HierNet"
-hiernet_plot = data.frame(Values = hiernet$beta[1:(p-2)], Variables = names,model = label)
+hiernet_plot = data.frame(Values = hiernet$beta[1:(p-2)], Variables = names,model = label,q_inf = hiernet$beta[1:(p-2)]
+                          ,q_sup = hiernet$beta[1:(p-2)])
 
 beta_plot = rbind(gibbs_plot,PIE_plot,RAMP_plot,Family_plot,hiernet_plot)
 ggplot(beta_plot, aes(x = Variables, y = Values, color = model,
@@ -279,7 +320,8 @@ ggplot(beta_plot, aes(x = Variables, y = Values, color = model,
          #legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
-   ggtitle(TeX("Estimated Main Effects"))
+   ggtitle(TeX("Estimated Main Effects"))+
+   geom_errorbar(aes(ymin=q_inf, ymax=q_sup), width=.1)
 
 
 
