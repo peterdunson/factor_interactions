@@ -232,8 +232,9 @@ ggplot(ggdf, aes(x = Var2, y = Var1)) +
 #lambda_sample
 #aligned
 factl = array(unlist(lambda_sample), dim = c(11,7,500))
+# factl = array(unlist(aligned), dim = c(11,7,500))
 img = image_graph(600, 340, res = 96)
-for(i in 1:500){
+for(i in seq(1,500,by = 5)){
    curr = factl[,,i,  drop = F] / max(factl)
    rownames(curr) = colnames(X[,1:(p-2)])
    SampleMean = melt(curr)
@@ -256,8 +257,11 @@ for(i in 1:500){
    #lambda.image =  c(lambda.image, lambda.add)
 }
 lambda.animated = image_animate(img, fps = 20, dispose = "background")
-image_write(lambda.animated, "LambdaAnimation.gif")
+image_write(lambda.animated, "Lambda_aligned.gif")
 
+# For latex
+# brew install ImageMagick
+# magick convert -coalesce Lambda_unrotated.gif Lambda_unrotated.png
 
 
 # Correlation plot
