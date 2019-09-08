@@ -5,9 +5,9 @@ library(lessR)
 library(latex2exp)
 
 # Metals 
-load("~/gp/data/NHANES 2015/Metals_nhanes.RData")
-Chem = subset(Metals_nhanes, select = -c(SEQN,Cholesterol,Creatinine,
-                                         BMI,Waist,Age,Sex,Race,Ratio_income))%>%
+load("~/factor_interactions/data/data_nhanes/nhanes_complete.RData")
+Chem = subset(data_nhanes, select = -c(ID,TotChol,Creatinine,
+                                         BMI,WAIST,Age,Gender,Race,Ratio_income_poverty))%>%
    data.matrix()
 
 # Phthalates
@@ -19,7 +19,9 @@ Chem = subset(PhthalatesMetals_nhanes, select = -c(SEQN,Cholesterol,Creatinine,
 # Correlation matrix 
 Chem = Chem[complete.cases(Chem),]
 C = stats::cor(Chem)
-colnames(C) = rownames(C) = colnames(Chem)
+colnames(C) = rownames(C) = c("Mono-n-butyl","Mono-isobutyl","Mono-ethyl","Mono-benzyl",
+                              "Mono-cyclohexyl","Mono-carbox","Mono-hydrox","Mono-oxohexyl",
+                              "Mono-hexyl","2,5-dich","2,4-dich")
 C = corReorder(C)
 
 C_plot = melt(C)
@@ -37,5 +39,5 @@ ggplot(C_plot, aes(x = Var2, y = Var1)) +
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") +
-   ggtitle(TeX("Correlation NHANES 2015"))
+   ggtitle(TeX(""))
 
