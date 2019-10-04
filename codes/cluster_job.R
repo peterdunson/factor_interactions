@@ -44,20 +44,22 @@ n = as.numeric(args[1]); p = as.numeric(args[2])
 # if sparse = 0 --> not sparse Omega; othw sparse omega
 type_model = as.numeric(args[3]); sparse = as.numeric(args[4])
 # number of true factors in correlated model
-k_true = as.numeric(args[5])
+k_true = as.numeric(args[5]);
+# noise in the model
+sigmasq = as.numeric(args[6]);
 
 if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      out_name = paste("n",n,"_p",p,"_ind","_notsparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse.rds",sep="")
       k_start = 15
       type = "independent"
       
    }else if(sparse == 1){
       ratio_Om = 0.02
       ratio_beta = 0.1
-      out_name = paste("n",n,"_p",p,"_ind","_sparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse.rds",sep="")
       k_start = 15
       type = "independent"
       
@@ -66,14 +68,14 @@ if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      out_name = paste("n",n,"_p",p,"_corr","_notsparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse.rds",sep="")
       k_start = k_true + 1
       type = "correlated"
       
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      out_name = paste("n",n,"_p",p,"_corr","_sparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_sparse.rds",sep="")
       k_start = k_true + 1
       type = "correlated"
    }
@@ -81,15 +83,15 @@ if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      out_name = paste("n",n,"_p",p,"_power","_notsparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse.rds",sep="")
       k_start = 12
-      type = "power covariance"
+      type = "wishart"
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      out_name = paste("n",n,"_p",p,"_power","_sparse.rds",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse.rds",sep="")
       k_start = 12
-      type = "power covariance"
+      type = "wishart"
    }
 }
 
@@ -106,7 +108,7 @@ for(s in 1:S){
    # generate the data
    data = generate_data(p = p,n = n,k_true = k_true,
                         ratio_Om = ratio_Om,ratio_beta = ratio_beta,
-                        type = type)
+                        type = type, sigmasq = sigmasq)
    y = data$y; X = data$X; beta_true = data$beta_true; 
    Omega_true = data$Omega_true;
    y_test = data$y_test; X_test = data$X_test
@@ -119,10 +121,10 @@ for(s in 1:S){
    #                         delta_rw = delta_05, epsilon_rw = 0.5,
    #                        a = 10, k = NULL)
    
-   
+   k_start = 25
    gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
                           delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = k_start, k = k_start )
+                          a = k_start, k = k_start)
    
    
    apply(gibbs_DL_k$beta_bayes,2,effectiveSize)
@@ -240,8 +242,6 @@ list_res = list(
 results_dir = file.path("/work/sta790/ff31/results_fact")
 #dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 saveRDS(list_res, file.path(results_dir, out_name))
-#readRDS("results/n100_p10_ind_notsparse")
-
 
 
 

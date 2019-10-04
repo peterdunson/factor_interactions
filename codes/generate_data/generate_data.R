@@ -1,8 +1,12 @@
 generate_data = function(p = 10,n = 100,k_true = 5,
                         ratio_Om = 0.2,ratio_beta = 0.2,
-                        type = "independent"){
+                        type = "independent", sigmasq = 1){
    
    if(type == "independent"){
+      X_big = scale(mvtnorm::rmvnorm(n*2,sigma=diag(p)))
+      X = X_big[1:n,]
+      X_test = X_big[(n+1):(2*n),]
+   }else if(type == "wishart"){
       W = stats::rWishart(1,p+1,S = diag(p))
       X_big = scale(mvtnorm::rmvnorm(n*2,sigma=W[,,1]))
       X = X_big[1:n,]
@@ -52,10 +56,10 @@ generate_data = function(p = 10,n = 100,k_true = 5,
    
    # generate output
    y=as.vector(diag(X%*%Omega_true%*%t(X))+
-                  X%*%beta_true+rnorm(n,0,1))
+                  X%*%beta_true+rnorm(n,0,sigmasq))
    
    y_test = as.vector(diag(X_test%*%Omega_true%*%t(X_test))+
-                         X_test%*%beta_true+rnorm(n,0,1))
+                         X_test%*%beta_true+rnorm(n,0,sigmasq))
    return(list(y = y, X = X, 
                beta_true = beta_true, 
                Omega_true = Omega_true,
