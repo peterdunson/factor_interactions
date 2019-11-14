@@ -27,6 +27,7 @@ sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
 #source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
 #source("/Users/felpo/factor_interactions/codes/functions/Gibbs_CUSP.R")
 #sourceDirectory("/Users/felpo/factor_interactions/codes/generate_data")
+#sourceDirectory("/Users/felpo/factor_interactions/codes/functions")
 #sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
@@ -85,18 +86,19 @@ if(type_model == 0){
       ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse.rds",sep="")
       k_start = 12
-      type = "wishart"
+      #type = "wishart"
+      type = "power covariance"
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse.rds",sep="")
       k_start = 12
-      type = "wishart"
+      type = "power covariance"
    }
 }
 
 
-S = 20
+S = 50
 err = err_pred = FR = err_beta = matrix(0,ncol = 8, nrow = S)
 alpha = 0.05
 TP_main = TN_main = TP_int = TN_int = matrix(0,ncol = 8, nrow = S)
@@ -114,25 +116,32 @@ for(s in 1:S){
    y_test = data$y_test; X_test = data$X_test
    
    #Factor models
-   nrun = 5000; burn = 4000; thin = 1; 
+   nrun = 5000; burn = 4000; thin = 5; 
    
    
    # gibbs_DL_05 = gibbs_DL(y, X ,nrun, burn, thin = 1, 
    #                         delta_rw = delta_05, epsilon_rw = 0.5,
    #                        a = 10, k = NULL)
    
-   k_start = 25
-   gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
-                          delta_rw = delta_k, epsilon_rw = 0.5,
-                          a = k_start, k = k_start)
+   eig_values = eigen(cor(X))$values
+   plot(eig_values)
+   
+   k_start = 12
+   # gibbs_DL_k = gibbs_DL(y, X ,nrun, burn, thin = 1, 
+   #                        delta_rw = delta_k, epsilon_rw = 0.5,
+   #                        a = k_start, k = k_start)
+   
+   gibbs_DL_P = gibbs_DL_Plam(y, X ,nrun, burn, thin = 1, 
+                         delta_rw = delta_k, epsilon_rw = 0.5,
+                         a = k_start, k = k_start)
    
    
-   apply(gibbs_DL_k$beta_bayes,2,effectiveSize)
-   apply(gibbs_DL_k$Omega_bayes,c(2,3),effectiveSize)
+   # apply(gibbs_DL_k$beta_bayes,2,effectiveSize)
+   # apply(gibbs_DL_k$Omega_bayes,c(2,3),effectiveSize)
    # apply(gibbs_DL_k$beta_bayes,2,mean)
    # Omega_hat = apply(gibbs_DL_k$Omega_bayes,c(2,3),mean)
-   # plot(gibbs_DL_k$beta_bayes[,4],ty="l")
-   # plot(gibbs_DL_k$Omega_bayes[,2,2],ty="l")
+   # plot(gibbs_DL_P$beta_bayes[,4],ty="l")
+   # plot(gibbs_DL_P$Omega_bayes[,2,2],ty="l")
    
    
    # gibbs_CUSP_10 = gibbs_CUSP(y, X ,nrun, burn, thin = 1, 
@@ -158,12 +167,13 @@ for(s in 1:S){
    Family = quiet(FAMILY_fct(y, X, X_test, y_test))
    PIE = PIE_fct(y, X, X_test, y_test)
    RAMP = RAMP_fct(y, X, X_test, y_test)
+   # PIE = RAMP
    
    #Errors
    errors = compute_errors(hiernet,Family,PIE,RAMP,
                            y,y_test,Omega_true,beta_true,
-                           gibbs_DL_k,gibbs_DL_k,
-                           gibbs_DL_k,gibbs_DL_k)
+                           gibbs_DL_P,gibbs_DL_P,
+                           gibbs_DL_P,gibbs_DL_P)
    
    
    # errors = compute_errors(hiernet,Family,PIE,RAMP,
@@ -178,13 +188,13 @@ for(s in 1:S){
    err_beta[s,] = errors$beta_MSE[-1]
    
    #TP and TNs
-   rate_main2 = rate_recovery_maineff(gibbs_DL_k,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
+   rate_main2 = rate_recovery_maineff(gibbs_DL_P,gibbs_DL_P,alpha = alpha,beta_true = beta_true,
                                       hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
-   rate_int2 = rate_recovery_interactions(gibbs_DL_k,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
+   rate_int2 = rate_recovery_interactions(gibbs_DL_P,gibbs_DL_P,alpha = alpha,Omega_true=Omega_true,
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
-   rate_main1 = rate_recovery_maineff(gibbs_DL_k,gibbs_DL_k,alpha = alpha,beta_true = beta_true,
+   rate_main1 = rate_recovery_maineff(gibbs_DL_P,gibbs_DL_P,alpha = alpha,beta_true = beta_true,
                                       hiernet$beta,Family$beta,PIE$beta,RAMP$beta)
-   rate_int1 = rate_recovery_interactions(gibbs_DL_k,gibbs_DL_k,alpha = alpha,Omega_true=Omega_true,
+   rate_int1 = rate_recovery_interactions(gibbs_DL_P,gibbs_DL_P,alpha = alpha,Omega_true=Omega_true,
                                           hiernet$Omega,Family$Omega,PIE$Omega,RAMP$Omega)
    
    # Coverage
@@ -218,7 +228,7 @@ for(s in 1:S){
 
 TP_main = TP_main[,c(5:8,1:4)]; TN_main = TN_main[,c(5:8,1:4)]
 TP_int = TP_int[,c(5:8,1:4)]; TN_int = TN_int[,c(5:8,1:4)]
-col_names = c("Hiernet","Family","Pie","RAMP","DL_05","DL_k","CUSP_10","CUSP_50")
+col_names = c("Hiernet","Family","Pie","RAMP","DL_P","DL_P","CUSP_10","CUSP_50")
 #col_names = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
 colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
 colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names

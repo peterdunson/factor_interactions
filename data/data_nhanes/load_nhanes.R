@@ -89,7 +89,6 @@ pesticides_nhanes = data %>%
 # URXDCB: 2,4-dichlorophenol (ug/L) result
 
 
-
 # people that have Phalates do not have metals
 metals_nhanes = data %>%
    filter(names == "Metals") %>%
