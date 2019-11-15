@@ -24,7 +24,7 @@ generate_data = function(p = 10,n = 100,k_true = 5,
       
       for(j in 1:p){
          for(k in 1:j){
-            W[j,k] = 0.7^abs(j-k)
+            W[j,k] = 0.8^abs(j-k)
          }
       }
       
