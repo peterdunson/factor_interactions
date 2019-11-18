@@ -31,7 +31,7 @@ exists("generate_indep_model_notsparse")
 n = 500; p = 10
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = 2; sparse = 0
+type_model = 2; sparse = 1
 # number of true factors in correlated model
 k_true = 10
 # noise in the model
@@ -57,7 +57,7 @@ if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse.rds",sep="")
+      out_name = paste("n",n,"_lp",p,"_sigmasq",sigmasq,"_corr","_notsparse.rds",sep="")
       k_start = k_true + 1
       type = "correlated"
       
@@ -109,8 +109,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 2000
-burn = 1500
+nrun = 5000
+burn = 4500
 thin = 5
 
 
