@@ -59,15 +59,52 @@ df_phalates_pfas_log_norm = df_phalates_pfas_log %>%
 # join data
 # df_out_analysis = df_out %>% select(SEQN,BPXSY1,BPXDI1,
 #                                     BMXWAIST,BMXBMI)
+
+# save the names for later
+chem_names = c(colnames(df_metals_log_norm),
+               colnames(df_phalates_pfas_log_norm))
+cov_names = colnames(df_cov)
+
+# join 
 df_out_analysis = df_out %>% select(SEQN,BMXBMI)
 df = join_all(list(df_cov,
                    df_out_analysis,
                    df_metals_log_norm,
-                   df_phalates_pfas_log_norm), 
+                   df_phalates_pfas_log_norm),
               by='SEQN', type='full')
 df = df %>% select(-SEQN)
 
+# no NA's for the outcome
+ind_na = df$BMXBMI %>% is.na 
+df = df[-ind_na,]
 
+# missing pattern
+df_01 = df %>% is.na()
+df_01 %>% as.matrix() %>% image()
+
+y = df$BMXBMI
+X = df %>% select(. , chem_names) %>% 
+   transmute(
+      cobalt = LBXBCO,copper_serum = LBXSCU,selenium_serum = LBXSSE,
+      zinc_serum = LBXSZN, lead_blood = LBXBPB, selenium_blood = LBXBSE,
+      manganese_blood = LBXBMN, barium_urine = URXUBA, cobalt_urine = URXUCO,
+      cesium_urine = URXUCS,molybdenum_urine = URXUMO,lead_urine = URXUPB,
+      tin_urine = URXUSN,strontium_urine = URXUSR,thallium_urine = URXUTL,
+      sm_pfos = LBXMFOS, n_perfluorooctanoic = LBXNFOA, n_perfluorooctane = LBXNFOS,
+      perfluorohexane = LBXPFHS, mono_carboxyisononyl = URXCNP,
+      mono_carboxyisoctyl = URXCOP, mono_2_ethyl_5_carboxypentyl= URXECP,
+      mhibp = URXHIBP, mono_n_butyl = URXMBP, mono_ethyl = URXMEP,
+      mono_2_ethyl_5_hydroxyhexyl = URXMHH, mono_isobutyl = URXMIB,
+      mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
+   )
+
+col_Z = c("RIDAGEYR","RIDRETH1","INDFMPIR","DMDMARTL",
+          "RIDEXPRG","LBXTC","URXUMA","URXUCR")
+Z = df %>% 
+   select(. , cov_names) %>% 
+   select(. , col_Z) %>% 
+   transmute(age = RIDAGEYR,gender = RIDRETH1, race = RIDRETH1 ,ratio_income = INDFMPIR,
+       marital_status = DMDMARTL,chol = LBXTC,albuminum = URXUMA,creatinine = URXUCR)
 
 
   

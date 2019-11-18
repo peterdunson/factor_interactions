@@ -211,13 +211,10 @@ rate_int1 = rate_recovery_interactions(
    RAMP$Omega
 )
 
-
 TP_main = c(rate_main2$TP[1:2], rate_main1$TP)
 TN_main = c(rate_main2$TN[1:2], rate_main1$TN)
 TP_int = c(rate_int2$TP[1:2], rate_int1$TP)
 TN_int = c(rate_int2$TN[1:2], rate_int1$TN)
-
-
 
 TP_main = TP_main[c(5:8,1:4)]; TN_main = TN_main[c(5:8,1:4)]
 TP_int = TP_int[c(5:8,1:4)]; TN_int = TN_int[c(5:8,1:4)]

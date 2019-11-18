@@ -31,11 +31,11 @@ exists("generate_indep_model_notsparse")
 n = 500; p = 10
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = 2; sparse = 1
+type_model = 1; sparse = 1
 # number of true factors in correlated model
 k_true = 10
 # noise in the model
-sigmasq = 0.25
+sigmasq = 0.25  
 
 if(type_model == 0){
    if(sparse == 0){
