@@ -25,6 +25,7 @@ sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 #sourceDirectory("/work/sta790/ff31/factor_interactions/codes/process_results")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_int.R")
 #exists("generate_indep_model_notsparse")
 exists("compute_errors")
 
