@@ -240,7 +240,7 @@ list_res = list(
 )
 
 
-results_dir = file.path("/work/sta790/ff31/results/array_jobs")
+results_dir = file.path("/work/sta790/ff31/factor_interactions/results/array_jobs")
 saveRDS(list_res, file.path(results_dir, out_name))
 
 
