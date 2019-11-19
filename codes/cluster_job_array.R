@@ -22,7 +22,7 @@ library(coda)
 # git clone https://github.com/fedfer/factor_interactions.git
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
-sourceDirectory("/work/sta790/ff31/factor_interactions/codes/post_processing")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/process_results")
 exists("generate_indep_model_notsparse")
 
 ##### Argument of R script ######
@@ -121,8 +121,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 5000
-burn = 4000
+nrun = 100
+burn = 20
 thin = 5
 
 gibbs_DL_P = gibbs_DL_Plam(

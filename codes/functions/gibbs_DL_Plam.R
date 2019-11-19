@@ -188,7 +188,7 @@ gibbs_DL_Plam = function(y, X ,nrun, burn, thin = 1,
       }
       
       if (i%%100==0){
-         #print(i)
+         print(i)
          acp_mean = mean(acp)/100
          #print(acp_mean)
          if(acp_mean > 0.3){

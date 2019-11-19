@@ -9,13 +9,14 @@ load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData"
 load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16//nhanes_phalates_pfas_1516.RData")
 
 # log trasform chemicals
+# metals
 df_metals_log = df_metals %>% 
   select(-SEQN) %>% 
   log(., base = 10) %>% 
   cbind(df_metals$SEQN, .) %>%  #but the name of the column is not pretty
   mutate(SEQN = df_metals$SEQN) %>% #so we append new column named SEQN to the end of dataset
   select(- "df_metals$SEQN") #and delete column with ugly name
-
+# phalates and pfs
 df_phalates_pfas_log = df_phalates_pfas %>% 
    select(-SEQN) %>% 
    log(., base = 10) %>% 
@@ -64,6 +65,8 @@ df_phalates_pfas_log_norm = df_phalates_pfas_log %>%
 chem_names = c(colnames(df_metals_log_norm),
                colnames(df_phalates_pfas_log_norm))
 cov_names = colnames(df_cov)
+col_Z = c("RIDAGEYR","RIDRETH1","INDFMPIR","DMDMARTL",
+          "RIDEXPRG","LBXTC","URXUMA","URXUCR")
 
 # join 
 df_out_analysis = df_out %>% select(SEQN,BMXBMI)
@@ -72,16 +75,12 @@ df = join_all(list(df_cov,
                    df_metals_log_norm,
                    df_phalates_pfas_log_norm),
               by='SEQN', type='full')
-df = df %>% select(-SEQN)
 
 # no NA's for the outcome
 ind_na = df$BMXBMI %>% is.na 
 df = df[-ind_na,]
 
-# missing pattern
-df_01 = df %>% is.na()
-df_01 %>% as.matrix() %>% image()
-
+# create the matrices for analysis
 y = df$BMXBMI
 X = df %>% select(. , chem_names) %>% 
    transmute(
@@ -98,16 +97,30 @@ X = df %>% select(. , chem_names) %>%
       mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
    )
 
-col_Z = c("RIDAGEYR","RIDRETH1","INDFMPIR","DMDMARTL",
-          "RIDEXPRG","LBXTC","URXUMA","URXUCR")
 Z = df %>% 
-   select(. , cov_names) %>% 
    select(. , col_Z) %>% 
-   transmute(age = RIDAGEYR,gender = RIDRETH1, race = RIDRETH1 ,ratio_income = INDFMPIR,
-       marital_status = DMDMARTL,chol = LBXTC,albuminum = URXUMA,creatinine = URXUCR)
+   transmute(age = RIDAGEYR,gender = RIDRETH1, 
+             race = RIDRETH1 ,chol = LBXTC,
+             # ratio_income = INDFMPIR,marital_status = DMDMARTL,
+             albuminum = URXUMA,creatinine = URXUCR)
 
+# observations that are missing all chemicals
+X_na = X %>% is.na()
+na_mean = apply(X_na, 1, mean)
+ind_na_all = which(na_mean == 1)
+X = X[-ind_na_all,]
+Z = Z[-ind_na_all,]
+y = y[-ind_na_all]
 
-  
+# NAs
+X_na = X %>% is.na()
+Z_na = Z %>% is.na()
+apply(X_na, 2, sum)
+apply(Z_na, 2, sum)
+# X_na %>% as.matrix() %>% image()
+# Z_na %>% as.matrix() %>% image()
+
+# impute the mean for chol, albuminum and creatinine
 
 
 
