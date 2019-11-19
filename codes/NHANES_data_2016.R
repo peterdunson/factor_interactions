@@ -11,18 +11,18 @@ load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16//nhanes_phalates_pfas_151
 # log trasform chemicals
 # metals
 df_metals_log = df_metals %>% 
-  select(-SEQN) %>% 
-  log(., base = 10) %>% 
-  cbind(df_metals$SEQN, .) %>%  #but the name of the column is not pretty
-  mutate(SEQN = df_metals$SEQN) %>% #so we append new column named SEQN to the end of dataset
-  select(- "df_metals$SEQN") #and delete column with ugly name
+   dplyr::select(-SEQN) %>% 
+   log(., base = 10) %>% 
+   cbind(df_metals$SEQN, .) %>%  #but the name of the column is not pretty
+   mutate(SEQN = df_metals$SEQN) %>% 
+   dplyr::select(- "df_metals$SEQN")#so we append new column named SEQN to the end of dataset
 # phalates and pfs
 df_phalates_pfas_log = df_phalates_pfas %>% 
-   select(-SEQN) %>% 
+   dplyr::select(-SEQN) %>% 
    log(., base = 10) %>% 
    cbind(df_phalates_pfas$SEQN, .) %>%  #but the name of the column is not pretty
    mutate(SEQN = df_phalates_pfas$SEQN) %>% #so we append new column named SEQN to the end of dataset
-   select(- "df_phalates_pfas$SEQN")
+   dplyr::select(- "df_phalates_pfas$SEQN")
 
 # get rid of the metals that do not respect the normality assumption
 # function to plot
@@ -39,7 +39,7 @@ hist_chem = function(df,col_number){
 #hist_chem(df_metals_log,13:25)
 #hist_chem(df_metals_log,26:34)
 df_metals_log_norm = df_metals_log %>% 
-   select(-c(LBXBCD, LBXBCR, LBXBGE,
+   dplyr::select(-c(LBXBCD, LBXBCR, LBXBGE,
              LBXBGM, LBXIHG,LBXTHG,URXUHG,
              URXUCD,URXUMN,URXUSB,URXUAB,URXUAC,
              URXUAS3,URXUAS5,URXUDMA,URXUMMA,
@@ -50,7 +50,7 @@ df_metals_log_norm = df_metals_log %>%
 #hist_chem(df_phalates_pfas_log,1:12)
 #hist_chem(df_phalates_pfas_log,13:27)
 df_phalates_pfas_log_norm = df_phalates_pfas_log %>% 
-   select(c(LBXMFOS,LBXNFOA,LBXNFOS,LBXPFHS,
+   dplyr::select(c(LBXMFOS,LBXNFOA,LBXNFOS,LBXPFHS,
             URXCNP,URXCOP,URXECP,URXHIBP,URXMBP,
             URXMEP,URXMHH,URXMIB,URXMOH,URXMZP,SEQN
    ))
@@ -69,7 +69,7 @@ col_Z = c("RIDAGEYR","RIDRETH1","INDFMPIR","DMDMARTL",
           "RIDEXPRG","LBXTC","URXUMA","URXUCR")
 
 # join 
-df_out_analysis = df_out %>% select(SEQN,BMXBMI)
+df_out_analysis = df_out %>% dplyr::select(SEQN,BMXBMI)
 df = join_all(list(df_cov,
                    df_out_analysis,
                    df_metals_log_norm,
@@ -77,12 +77,12 @@ df = join_all(list(df_cov,
               by='SEQN', type='full')
 
 # no NA's for the outcome
-ind_na = df$BMXBMI %>% is.na 
+ind_na = df$BMXBMI %>% is.na %>% which(. == T)
 df = df[-ind_na,]
 
 # create the matrices for analysis
 y = df$BMXBMI
-X = df %>% select(. , chem_names) %>% 
+X = df %>% dplyr::select(. , chem_names) %>% 
    transmute(
       cobalt = LBXBCO,copper_serum = LBXSCU,selenium_serum = LBXSSE,
       zinc_serum = LBXSZN, lead_blood = LBXBPB, selenium_blood = LBXBSE,
@@ -98,7 +98,7 @@ X = df %>% select(. , chem_names) %>%
    )
 
 Z = df %>% 
-   select(. , col_Z) %>% 
+   dplyr::select(. , col_Z) %>% 
    transmute(age = RIDAGEYR,gender = RIDRETH1, 
              race = RIDRETH1 ,chol = LBXTC,
              # ratio_income = INDFMPIR,marital_status = DMDMARTL,
@@ -121,7 +121,22 @@ apply(Z_na, 2, sum)
 # Z_na %>% as.matrix() %>% image()
 
 # impute the mean for chol, albuminum and creatinine
+n = nrow(Z)
+mean_Z = apply(Z, 2, function(x) mean(x,na.rm = T))
+Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
+Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 
+source("codes/functions/gibbs_DL_confounder_NA.R")
+ind = 1:1000
+y = y[ind]
+X = X[ind,]
+X_na = X_na[ind,]
+Z =  Z_imputed[ind,]
+nrun = 100; burn = 10
+thin = 1; delta_rw = 0.2; epsilon_rw = 0.5;
+a = 1/2; k = NULL
+gibbs_DL_confounder_NA(y[ind], X[ind,], X_na[ind,], Z_imputed[ind,],
+                       nrun = 100,burn = 10)
 
 
 

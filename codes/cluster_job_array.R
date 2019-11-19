@@ -23,7 +23,10 @@ library(coda)
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/process_results")
-exists("generate_indep_model_notsparse")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
+#exists("generate_indep_model_notsparse")
+exists("compute_errors")
 
 ##### Argument of R script ######
 args = commandArgs(trailingOnly = TRUE)
