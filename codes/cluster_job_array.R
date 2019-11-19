@@ -22,7 +22,7 @@ library(coda)
 # git clone https://github.com/fedfer/factor_interactions.git
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
 sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
-sourceDirectory("/work/sta790/ff31/factor_interactions/codes/process_results")
+#sourceDirectory("/work/sta790/ff31/factor_interactions/codes/process_results")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
 #exists("generate_indep_model_notsparse")
@@ -223,8 +223,8 @@ TP_main = TP_main[c(5:8,1:4)]; TN_main = TN_main[c(5:8,1:4)]
 TP_int = TP_int[c(5:8,1:4)]; TN_int = TN_int[c(5:8,1:4)]
 #col_names = c("Hiernet","Family","Pie","RAMP","DL_P","DL_P","CUSP_10","CUSP_50")
 #col_names = c("DL_05","DL_k","CUSP_10","CUSP_50","Hiernet","Family","Pie","RAMP")
-colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
-colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names
+#colnames(err_beta) = colnames(err_pred) = colnames(err) = colnames(FR) = col_names
+#colnames(TP_main) = colnames(TN_main) = colnames(TP_int) = colnames(TN_int) = col_names
 
 
 list_res = list(
