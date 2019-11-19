@@ -1,7 +1,7 @@
 ### Postprocessing results simulations
 library(tidyverse)
 library(stargazer)
-library(plotly)
+#library(plotly)
 #results = readRDS("~/factor_interactions/results_fact3/n500_p25_ind_sparse.RDS")
 #results = readRDS("~/factor_interactions/results_fact_ind/n500_p25_ind_sparse.RDS")
 
