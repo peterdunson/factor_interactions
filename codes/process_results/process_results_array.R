@@ -1,39 +1,66 @@
 ### Postprocessing results simulations
 library(tidyverse)
 library(stargazer)
-#library(plotly)
-#results = readRDS("~/factor_interactions/results_fact3/n500_p25_ind_sparse.RDS")
-#results = readRDS("~/factor_interactions/results_fact_ind/n500_p25_ind_sparse.RDS")
+library(plotly)
 
-#results = readRDS("~/factor_interactions/results_fact/n100_p10_corr_sparse.RDS")
-#results = readRDS("~/factor_interactions/results_fact/n100_p10_ind_notsparse.RDS")
-#results = readRDS("~/factor_interactions/results_fact/n100_p10_ind_sparse.RDS")
+# Organize in a folder
+# cd /Users/felpo/factor_interactions/results/array_jobs/
+# mkdir n500_p25_sigmasq1_corr_notsparse
+# mv n500_p25_sigmasq1_corr_notsparse_* n500_p25_sigmasq1_corr_notsparse/
 
-results$TP_main
-# --- quantile functions ---
-quant = function(x){
-   quantile(x,probs = c(0.05,0.95))
-}
-quant_inf = function(x){
-   quantile(x,probs = c(0.25))
-}
-quant_sup = function(x){
-   quantile(x,probs = c(0.75))
+
+folder = "n500_p25_sigmasq0.25_corr_notsparse"
+
+# create matrices for results
+FR = matrix(0,nrow = 50, ncol = 5)
+col_names = c("hiernet","Family","PIE","RAMP","FIN")
+colnames(FR) = col_names
+TP_main = TN_main = TP_int = TN_int = 
+   MSE_beta = err_pred = err_train = FR
+zeros = c()
+for(i in 1:50){
+   out = paste("~/factor_interactions/results/array_jobs/",folder,
+               "/n500_p25_sigmasq0.25_corr_notsparse_iter=",
+               i,".rds", sep = "")
+   
+   if(file.exists(out)){
+      
+      results_curr = readRDS(out) 
+      TP_main[i,] = results_curr$TP_main[1:5]
+      TN_main[i,] = results_curr$TN_main[1:5]
+      TP_int[i,] = results_curr$TP_int[1:5]
+      TN_int[i,] = results_curr$TN_int[1:5]
+      MSE_beta[i,] = results_curr$MSE_beta[1:5]
+      err_pred[i,] = results_curr$err_pred[1:5]
+      err_train[i,] = results_curr$err_test[1:5]
+      FR[i,] = results_curr$FR[1:5]
+      
+   }else{
+      zeros = c(zeros,i)
+   }
+   
 }
 
-source("~/factor_interactions/codes/post_processing/return_G.R")
+if(is.null(zeros) == F){
+   TP_main = TP_main[-zeros,];TN_main = TN_main[-zeros,]
+   TP_int = TP_int[-zeros,];TN_int = TN_int[-zeros,]
+   MSE_beta = MSE_beta[-zeros,];err_pred = err_pred[-zeros,]
+   err_train = err_train[-zeros,];FR = FR[-zeros,]
+   
+}
+
+results = list(TP_main = TP_main, TN_main = TN_main,
+               TP_int = TP_int, TN_int = TN_int, 
+               MSE_beta = MSE_beta,err_pred = err_pred, 
+               err_test = err_train, FR = FR)
+
+
+source("~/factor_interactions/codes/process_results/return_G.R")
 G = return_G(results)
+G
 
-results = readRDS("~/factor_interactions/results_fact2/n500_p25_corr_sparse.RDS")
-G1 = return_G(results)
-results = readRDS("~/factor_interactions/results_fact3/n500_p25_corr_notsparse.RDS")
-G2 = return_G(results)
-results = readRDS("~/factor_interactions/results_fact_ind/n500_p25_ind_sparse.RDS")
-G3 = return_G(results)
-results = readRDS("~/factor_interactions/results_fact_ind/n500_p25_ind_notsparse.RDS")
-G4 = return_G(results)
-G = rbind(G1,G2,G3,G4)
-stargazer(G[,1:5])
+
+
 
 
 
