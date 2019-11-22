@@ -247,7 +247,7 @@ list_res = list(
 
 
 # save
-dir_path = paste("/work/sta790/ff31/factor_interactions/results/array_jobs",
+dir_path = paste("/work/sta790/ff31/factor_interactions/results/array_jobs/",
                  dir_name,sep="")
 
 if(dir.exists(dir_path) == F){
