@@ -55,7 +55,7 @@ if(type_model == 0){
       dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",
                        "_iter=",i,".rds",sep="")
-      k_start = 15
+      k_start = 35
       type = "independent"
       
    }else if(sparse == 1){
@@ -64,7 +64,7 @@ if(type_model == 0){
       dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",
                        "_iter=",i,".rds",sep="")
-      k_start = 15
+      k_start = 35
       type = "independent"
       
    }
