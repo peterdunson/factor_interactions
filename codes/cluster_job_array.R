@@ -61,7 +61,7 @@ if(type_model == 0){
    }else if(sparse == 1){
       ratio_Om = 0.02
       ratio_beta = 0.1
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",
                        "_iter=",i,".rds",sep="")
       k_start = 15
@@ -72,7 +72,7 @@ if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",
                        "_iter=",i,".rds",sep="")
       k_start = k_true + 1
@@ -81,8 +81,8 @@ if(type_model == 0){
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
-      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_sparse",
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",
                        "_iter=",i,".rds",sep="")
       k_start = k_true + 1
       type = "correlated"
@@ -91,7 +91,7 @@ if(type_model == 0){
    if(sparse == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",
                        "_iter=",i,".rds",sep="")
       k_start = 12
@@ -100,7 +100,7 @@ if(type_model == 0){
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse",
                        "_iter=",i,".rds",sep="")
       type = "power covariance"
