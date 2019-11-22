@@ -9,7 +9,7 @@ library(plotly)
 # mv n500_p25_sigmasq1_corr_notsparse_* n500_p25_sigmasq1_corr_notsparse/
 
 
-folder = "n500_p25_sigmasq0.25_corr_notsparse"
+folder = "n500_p50_sigmasq0.25_corr_notsparse"
 
 # create matrices for results
 FR = matrix(0,nrow = 50, ncol = 5)
@@ -20,7 +20,7 @@ TP_main = TN_main = TP_int = TN_int =
 zeros = c()
 for(i in 1:50){
    out = paste("~/factor_interactions/results/array_jobs/",folder,
-               "/n500_p25_sigmasq0.25_corr_notsparse_iter=",
+               "/",folder,"_iter=",
                i,".rds", sep = "")
    
    if(file.exists(out)){

@@ -81,8 +81,8 @@ if(type_model == 0){
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",sep="")
-      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_notsparse",
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_sparse",sep="")
+      out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_corr","_sparse",
                        "_iter=",i,".rds",sep="")
       k_start = k_true + 1
       type = "correlated"
@@ -100,7 +100,7 @@ if(type_model == 0){
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
-      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",sep="")
+      dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse",
                        "_iter=",i,".rds",sep="")
       type = "power covariance"
