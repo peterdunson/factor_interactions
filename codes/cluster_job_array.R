@@ -55,7 +55,7 @@ if(type_model == 0){
       dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_notsparse",
                        "_iter=",i,".rds",sep="")
-      k_start = 35
+      k_start = k_true
       type = "independent"
       
    }else if(sparse == 1){
@@ -64,7 +64,7 @@ if(type_model == 0){
       dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_ind","_sparse",
                        "_iter=",i,".rds",sep="")
-      k_start = 35
+      k_start = k_true
       type = "independent"
       
    }
@@ -94,7 +94,7 @@ if(type_model == 0){
       dir_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",sep="")
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse",
                        "_iter=",i,".rds",sep="")
-      k_start = 12
+      k_start = k_true
       #type = "wishart"
       type = "power covariance"
    }else if (sparse == 1){
@@ -104,6 +104,7 @@ if(type_model == 0){
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse",
                        "_iter=",i,".rds",sep="")
       type = "power covariance"
+      k_start = k_true
    }
 }
 
