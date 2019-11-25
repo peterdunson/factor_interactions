@@ -28,10 +28,10 @@ sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
-n = 500; p = 10
+n = 500; p = 50
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = 1; sparse = 1
+type_model = 2; sparse = 1
 # number of true factors in correlated model
 k_true = 10
 # noise in the model
@@ -73,14 +73,14 @@ if(type_model == 0){
       ratio_Om = 0.2
       ratio_beta = 0.2
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_notsparse.rds",sep="")
-      k_start = 12
+      k_start = 23
       #type = "wishart"
       type = "power covariance"
    }else if (sparse == 1){
       ratio_Om = 0.01
       ratio_beta = 0.1
       out_name = paste("n",n,"_p",p,"_sigmasq",sigmasq,"_wishart","_sparse.rds",sep="")
-      k_start = 12
+      k_start = 23
       type = "power covariance"
    }
 }
