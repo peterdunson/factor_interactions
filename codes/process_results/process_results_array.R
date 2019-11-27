@@ -9,7 +9,7 @@ library(plotly)
 # mv n500_p25_sigmasq1_corr_notsparse_* n500_p25_sigmasq1_corr_notsparse/
 
 
-folder = "n500_p50_sigmasq1_ind_notsparse"
+folder = "n500_p25_sigmasq1_corr_sparse"
 
 # create matrices for results
 FR = matrix(0,nrow = 50, ncol = 5)
