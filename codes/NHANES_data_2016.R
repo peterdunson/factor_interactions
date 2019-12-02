@@ -3,10 +3,14 @@ library(tidyverse)
 library(plyr)
 
 # load data
-load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
-load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
-load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
-load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16//nhanes_phalates_pfas_1516.RData")
+load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
+load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
+load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
+load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
+# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
+# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
+# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
+# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
 
 # log trasform chemicals
 # metals
@@ -126,17 +130,15 @@ mean_Z = apply(Z, 2, function(x) mean(x,na.rm = T))
 Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
 Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 
-source("codes/functions/gibbs_DL_confounder_NA.R")
-ind = 1:1000
-y = y[ind]
-X = X[ind,]
-X_na = X_na[ind,]
-Z =  Z_imputed[ind,]
-nrun = 100; burn = 10
-thin = 1; delta_rw = 0.2; epsilon_rw = 0.5;
-a = 1/2; k = NULL
-gibbs_DL_confounder_NA(y[ind], X[ind,], X_na[ind,], Z_imputed[ind,],
-                       nrun = 100,burn = 10)
+source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
+# source("codes/functions/gibbs_DL_confounder_NA.R")
+
+gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
+                       nrun = 10000,burn = 7500)
+results_dir = "/work/sta790/ff31/factor_interactions/"
+saveRDS(gibbs,   file.path(results_dir, "metals_pfas.rds"))
+
+
 
 
 
