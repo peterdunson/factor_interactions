@@ -26,6 +26,7 @@ sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_int.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_y")
 #exists("generate_indep_model_notsparse")
 exists("compute_errors")
 
@@ -149,6 +150,11 @@ gibbs_DL_P = gibbs_DL_Plam(
 )
 
 
+# Coverage
+cov_y = coverage_y(y_test, X_test, gibbs_DL_P)
+bias_pred = cov_y$bias
+coverage_pred = cov_y$coverage
+
 
 # Competitors
 hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
@@ -243,7 +249,9 @@ list_res = list(
    MSE_beta = err_beta,
    err_pred = err_pred,
    err_test = err,
-   FR = FR
+   FR = FR,
+   coverage_pred = coverage_pred,
+   bias_pred = bias_pred
 )
 
 

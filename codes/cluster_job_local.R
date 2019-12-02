@@ -28,7 +28,7 @@ sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
-n = 500; p = 50
+n = 200; p = 10
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
 type_model = 2; sparse = 1
@@ -109,8 +109,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 5000
-burn = 4500
+nrun = 1000
+burn = 500
 thin = 5
 
 
@@ -137,12 +137,15 @@ gibbs_DL_P = gibbs_DL_Plam(
    nrun,
    burn,
    thin = 1,
-   delta_rw = delta_k,
+   delta_rw = 1,
    epsilon_rw = 0.5,
    a = k_start,
    k = k_start
 )
 gibbs_DL_k = gibbs_DL_P
+
+
+
 
 # apply(gibbs_DL_k$beta_bayes,2,effectiveSize)
 # apply(gibbs_DL_k$Omega_bayes,c(2,3),effectiveSize)
