@@ -26,7 +26,7 @@ sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
 source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_int.R")
-source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_y")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_y.R")
 #exists("generate_indep_model_notsparse")
 exists("compute_errors")
 
@@ -256,7 +256,7 @@ list_res = list(
 
 
 # save
-dir_path = paste("/work/sta790/ff31/factor_interactions/results/array_jobs/",
+dir_path = paste("/work/sta790/ff31/factor_interactions/results/array_jobs_cov/",
                  dir_name,sep="")
 
 if(dir.exists(dir_path) == F){
