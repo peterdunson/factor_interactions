@@ -1,3 +1,4 @@
+library(tidyverse)
 coverage_y = function(y_test,X_test,gibbs,alpha = 0.05){
    
    alphabayes = gibbs$alpha_bayes
