@@ -3,14 +3,10 @@ library(tidyverse)
 library(plyr)
 
 # load data
-load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
-load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
-load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
-load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
+load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
+load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
+load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
+load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
 
 # log trasform chemicals
 # metals
@@ -44,19 +40,19 @@ hist_chem = function(df,col_number){
 #hist_chem(df_metals_log,26:34)
 df_metals_log_norm = df_metals_log %>% 
    dplyr::select(-c(LBXBCD, LBXBCR, LBXBGE,
-             LBXBGM, LBXIHG,LBXTHG,URXUHG,
-             URXUCD,URXUMN,URXUSB,URXUAB,URXUAC,
-             URXUAS3,URXUAS5,URXUDMA,URXUMMA,
-             URXUUR,URXUTU
-             ))
+                    LBXBGM, LBXIHG,LBXTHG,URXUHG,
+                    URXUCD,URXUMN,URXUSB,URXUAB,URXUAC,
+                    URXUAS3,URXUAS5,URXUDMA,URXUMMA,
+                    URXUUR,URXUTU
+   ))
 
 # phalates and pfs
 #hist_chem(df_phalates_pfas_log,1:12)
 #hist_chem(df_phalates_pfas_log,13:27)
 df_phalates_pfas_log_norm = df_phalates_pfas_log %>% 
    dplyr::select(c(LBXMFOS,LBXNFOA,LBXNFOS,LBXPFHS,
-            URXCNP,URXCOP,URXECP,URXHIBP,URXMBP,
-            URXMEP,URXMHH,URXMIB,URXMOH,URXMZP,SEQN
+                   URXCNP,URXCOP,URXECP,URXHIBP,URXMBP,
+                   URXMEP,URXMHH,URXMIB,URXMOH,URXMZP,SEQN
    ))
 
 
@@ -130,10 +126,19 @@ mean_Z = apply(Z, 2, function(x) mean(x,na.rm = T))
 Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
 Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 
-source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
+source("codes/functions/gibbs_DL_confounder_NA.R")
 
-gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
-                       nrun = 1000,burn = 750)
+y = y[ind];
+X = X[ind,]
+X_na = X_na[ind,]
+Z = Z_imputed[ind,]
+ind = 1:500
+gibbs = gibbs_DL_confounder_NA(y[ind], X[ind,], X_na[ind,], Z_imputed[ind,],
+                               nrun = 500,burn = 300)
+
+
+
+
 results_dir = "/work/sta790/ff31/factor_interactions/"
 saveRDS(gibbs,   file.path(results_dir, "metals_pfas.rds"))
 

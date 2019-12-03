@@ -5,14 +5,14 @@ library(reshape2)
 library(tidyverse)
 library(latex2exp)
 library(magick)
-source("~/factor_interactions/codes/post_processing/coverage_int.R")
+source("~/factor_interactions/codes/process_results/coverage_int.R")
 source("~/factor_interactions/codes/functions/gibbs_DL.R")
 source("~/factor_interactions/codes/functions/gibbs_DL_confounder_int.R")
 source("~/factor_interactions/codes/functions/Competitors_fcts.R")
 source("~/factor_interactions/codes/functions/quiet.R")
-source("~/factor_interactions/codes/post_processing/compute_errors_data.R")
-source("~/factor_interactions/codes/post_processing/mcrotfact.R")
-source("~/factor_interactions/codes/post_processing/clustalignplus.R")
+source("~/factor_interactions/codes/process_results/compute_errors_data.R")
+source("~/factor_interactions/codes/process_results/mcrotfact.R")
+source("~/factor_interactions/codes/process_results/clustalignplus.R")
 
 
 

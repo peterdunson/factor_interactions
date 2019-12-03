@@ -26,7 +26,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    if(length(y) != n) stop("Mismatching input lengths")
    
    #scale
-   VX = apply(X, 2, var)   
+   VX = apply(X, 2, function(x) var(x, na.rm = T))  
    dsVX = diag(sqrt(VX)); dsVX_inv = diag(1/sqrt(VX))
    
    VZ = apply(Z, 2, var)
