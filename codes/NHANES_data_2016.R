@@ -133,7 +133,7 @@ Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
 
 gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
-                       nrun = 1000,burn = 750)
+                       nrun = 3000,burn = 2500)
 results_dir = "/work/sta790/ff31/factor_interactions/"
 saveRDS(gibbs,   file.path(results_dir, "metals_pfas.rds"))
 
