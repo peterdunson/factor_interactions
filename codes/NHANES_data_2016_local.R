@@ -13,6 +13,7 @@ library(R.utils)
 source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
 sourceDirectory("/Users/felpo/factor_interactions/codes/functions")
 source("/Users/felpo/factor_interactions/codes/process_results/compute_errors.R")
+source("/Users/felpo/factor_interactions/codes/process_results/coverage_int.R")
 
 # read simulation from cluster
 gibbs = readRDS("~/factor_interactions/metals_pfas.rds")

@@ -70,7 +70,7 @@ chem_names = c(colnames(df_metals_log_norm),
                colnames(df_phalates_pfas_log_norm))
 cov_names = colnames(df_cov)
 col_Z = c("RIDAGEYR","RIDRETH1","INDFMPIR","DMDMARTL",
-          "RIDEXPRG","LBXTC","URXUMA","URXUCR")
+          "RIDEXPRG","LBXTC","URXUCR")
 
 # join 
 df_out_analysis = df_out %>% dplyr::select(SEQN,BMXBMI)
@@ -99,22 +99,24 @@ X = df %>% dplyr::select(. , chem_names) %>%
       mhibp = URXHIBP, mono_n_butyl = URXMBP, mono_ethyl = URXMEP,
       mono_2_ethyl_5_hydroxyhexyl = URXMHH, mono_isobutyl = URXMIB,
       mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
-   )
+   ) %>%
+   select(- selenium_serum)
 
 Z = df %>% 
    dplyr::select(. , col_Z) %>% 
    transmute(age = RIDAGEYR,gender = RIDRETH1, 
-             race = RIDRETH1 ,chol = LBXTC,
+             race = RIDRETH1 ,chol = log(LBXTC),
              # ratio_income = INDFMPIR,marital_status = DMDMARTL,
-             albuminum = URXUMA,creatinine = URXUCR)
+             # albuminum = URXUMA,
+             creatinine = log(URXUCR))
 
 # observations that are missing all chemicals
 X_na = X %>% is.na()
 na_mean = apply(X_na, 1, mean)
 ind_na_all = which(na_mean == 1)
-X = X[-ind_na_all,]
-Z = Z[-ind_na_all,]
-y = y[-ind_na_all]
+X = X[-ind_na_all,] %>% scale() %>% as.data.frame()
+Z = Z[-ind_na_all,] 
+y = y[-ind_na_all] %>% scale()
 
 # NAs
 X_na = X %>% is.na()
@@ -129,6 +131,7 @@ n = nrow(Z)
 mean_Z = apply(Z, 2, function(x) mean(x,na.rm = T))
 Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
 Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
+Z_imputed = Z_imputed %>% scale() %>% as.matrix()
 
 source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
 
