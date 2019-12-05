@@ -136,7 +136,7 @@ Z_imputed = Z_imputed %>% scale() %>% as.matrix()
 source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
 
 gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
-                       nrun = 3000,burn = 2500)
+                       nrun = 3000,burn = 2500, k = 13)
 results_dir = "/work/sta790/ff31/factor_interactions/"
 saveRDS(gibbs,   file.path(results_dir, "metals_pfas.rds"))
 
