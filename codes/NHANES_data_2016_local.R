@@ -242,17 +242,29 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
    ggtitle(TeX("Interactions X-Z"))
 
 # --- Competitors --- #
+library(mice)
+source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
+source("/Users/felpo/factor_interactions/codes/functions/Competitors_fcts.R")
 W = cbind(X,Z_imputed)
+W_imputed = mice(W,m=1,maxit=50,meth='pmm',seed=500)
+W_imputed = complete(W_imputed,1) 
+W_imputed = W_imputed %>% as.matrix()
 
-hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
-Family = quiet(FAMILY_fct(y,W,W_test,y_test))
-RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
-PIE = quiet(PIE_fct(y,X,X_test,y_test))
+hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
+Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
+RAMP = quiet(RAMP_fct(y,W_imputed))
+PIE = quiet(PIE_fct(y,W_imputed))
+PIE = RAMP
+RAMP = hiernet
+# hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
+# Family = quiet(FAMILY_fct(y,W,W_test,y_test))
+# RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
+# PIE = quiet(PIE_fct(y,X,X_test,y_test))
 
 
 # --- Compute errors --- #
 errors = compute_errors_data(hiernet,Family,RAMP,RAMP,
-                             y = y,y_test = y_test,X_test = X_test,Z_test = Z_test,
+                             y = y,y_test = y,X_test = W_imputed,Z_test = Z_imputed,
                              gibbs)
 
 y_hat = X%*%beta_hat + 
@@ -399,26 +411,26 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
 
 # Plot main effects
 #
-names = as.character(colnames(X)[1:(p-2)])
+names = as.character(colnames(X))
 label = "FIN"
 q_sup = apply(gibbs$beta_bayes,2,function(x) quantile(x,probs = 0.95))
 q_inf = apply(gibbs$beta_bayes,2,function(x) quantile(x,probs = 0.05))
-gibbs_plot = data.frame(Values = beta_hat[1:(p-2)], 
+gibbs_plot = data.frame(Values = beta_hat, 
                         Variables = names,
                         model = label,
-                        q_inf = q_inf[1:(p-2)], q_sup = q_sup[1:(p-2)])
+                        q_inf = q_inf, q_sup = q_sup)
 label = "PIE"
-PIE_plot = data.frame(Values = PIE$beta[1:(p-2)], Variables = names,model = label, q_inf = PIE$beta[1:(p-2)]
-                      ,q_sup = PIE$beta[1:(p-2)])
+PIE_plot = data.frame(Values = PIE$beta[1:p], Variables = names,model = label, q_inf = PIE$beta[1:p],
+                      q_sup = PIE$beta[1:p])
 label = "RAMP"
-RAMP_plot = data.frame(Values = RAMP$beta[1:(p-2)], Variables = names,model = label, q_inf = RAMP$beta[1:(p-2)]
-                       ,q_sup = RAMP$beta[1:(p-2)])
+RAMP_plot = data.frame(Values = RAMP$beta[1:p], Variables = names,model = label, q_inf = RAMP$beta[1:p],
+                       q_sup = RAMP$beta[1:p])
 label = "Family"
-Family_plot = data.frame(Values = Family$beta[1:(p-2)], Variables = names,model = label,q_inf = Family$beta[1:(p-2)]
-                         ,q_sup = Family$beta[1:(p-2)])
+Family_plot = data.frame(Values = Family$beta[1:p], Variables = names,model = label,q_inf = Family$beta[1:p],
+                         q_sup = Family$beta[1:p])
 label = "HierNet"
-hiernet_plot = data.frame(Values = hiernet$beta[1:(p-2)], Variables = names,model = label,q_inf = hiernet$beta[1:(p-2)]
-                          ,q_sup = hiernet$beta[1:(p-2)])
+hiernet_plot = data.frame(Values = hiernet$beta[1:p], Variables = names,model = label,q_inf = hiernet$beta[1:p],
+                          q_sup = hiernet$beta[1:p])
 
 beta_plot = rbind(gibbs_plot,PIE_plot,RAMP_plot,Family_plot,hiernet_plot)
 ggplot(beta_plot, aes(x = Variables, y = Values, color = model,

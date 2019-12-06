@@ -62,6 +62,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    beta_Z_bayes = matrix(0,sp,l)
    phi_st = array(0,c(sp,k))
    Psi_st = array(0,c(sp,k,k))
+   y_pred_st = array(0,c(sp,n))
    acp = numeric(n)
    
    sigmasq_y = 1                 # initial values
@@ -135,7 +136,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
       eta.T = t(eta)
       XZ_reg = model.matrix(y~ eta:Z - 1,as.data.frame(cbind(eta,Z)))
       XZ_reg.T = t(XZ_reg)
-      Lambda_n = XZ_reg.T%*%XZ_reg/sigmasq_y + diag(rep(1,ncol(XZ_reg)))*20
+      Lambda_n = XZ_reg.T%*%XZ_reg/sigmasq_y + diag(rep(1,ncol(XZ_reg)))*100
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%XZ_reg.T%*%(y-eta%*%phi-mu_z-diag(eta%*%Psi%*%eta.T))/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -146,7 +147,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
       MM = model.matrix(y~.^2 - 1,as.data.frame(eta))  # perform factorized regression
       X_reg = cbind(eta^2,MM[,(k+1):ncol(MM)])
       X_reg.T = t(X_reg)
-      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))*30
+      Lambda_n = X_reg.T%*%X_reg/sigmasq_y + diag(rep(1,ncol(X_reg)))*100
       Vcsi = solve(Lambda_n)
       Mcsi = Vcsi%*%X_reg.T%*%(y-eta%*%phi-mu_z - diag(eta%*%Phi%*%Z.T))/sigmasq_y
       csi = bayesSurv::rMVNorm(n=1,mean=Mcsi,Sigma=Vcsi)
@@ -237,6 +238,13 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
          Psi_st[count,,] = Psi
          phi_st[count,] = phi
          Lambda_st[count,,] = dsVX %*% Lambda
+         
+         y_pred_st[count,] = X%*%beta_bayes[count,] + 
+            as.vector(diag(X%*%Omega_bayes[count,,]%*%t(X))) +
+            alpha_bayes[count] + Z%*%beta_Z_bayes[count,] +
+            as.vector(diag(X%*%Omega_conf[count,,]%*%t(Z)))
+         
+         
          count = count + 1
       }
       
