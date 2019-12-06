@@ -133,8 +133,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 5000
-burn = 4000
+nrun = 100
+burn = 40
 thin = 5
 
 gibbs_DL_P = gibbs_DL_Plam(
@@ -259,9 +259,9 @@ list_res = list(
 dir_path = paste("/work/sta790/ff31/factor_interactions/results/array_jobs_cov/",
                  dir_name,sep="")
 
-if(dir.exists(dir_path) == F){
-   dir.create(dir_path)
-}
+# if(dir.exists(dir_path) == F){
+#    dir.create(dir_path)
+# }
 
 saveRDS(list_res, file.path(dir_path, out_name))
 
