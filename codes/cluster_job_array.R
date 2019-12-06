@@ -133,8 +133,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 100
-burn = 40
+nrun = 5000
+burn = 4000
 thin = 5
 
 gibbs_DL_P = gibbs_DL_Plam(
