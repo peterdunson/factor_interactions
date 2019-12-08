@@ -188,6 +188,7 @@ apply(gibbs$beta_bayes,2,quantile)
 plot(gibbs$Omega_bayes[,3,3],ty="l")
 plot(gibbs$Omega_conf[,1,1],ty="l")
 plot(gibbs$Omega_conf[,1,2],ty="l")
+plot(gibbs$Omega_conf[,1,4],ty="l")
 
 # --- plot omega_hat --- #
 cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_bayes)
@@ -252,7 +253,7 @@ W_imputed = W_imputed %>% as.matrix()
 
 hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
 Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
-RAMP = quiet(RAMP_fct(y,W_imputed))
+#RAMP = quiet(RAMP_fct(y,W_imputed))
 PIE = quiet(PIE_fct(y,W_imputed))
 PIE = RAMP
 RAMP = hiernet
