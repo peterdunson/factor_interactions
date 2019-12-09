@@ -31,7 +31,7 @@ exists("generate_indep_model_notsparse")
 n = 500; p = 50
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = 2; sparse = 0
+type_model = 1; sparse = 0
 # number of true factors in correlated model
 k_true = 17
 # noise in the model
@@ -102,6 +102,8 @@ data = generate_data(
 y = data$y
 X = data$X
 beta_true = data$beta_true
+
+cor(X) %>% abs() %>% mean()
 
 Omega_true = data$Omega_true
 

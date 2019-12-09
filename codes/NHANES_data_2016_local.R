@@ -69,7 +69,7 @@ df_phalates_pfas_log_norm = df_phalates_pfas_log %>%
                    URXCNP,URXCOP,URXECP,URXHIBP,URXMBP,
                    URXMEP,URXMHH,URXMIB,URXMOH,URXMZP,SEQN
    ))
-
+# pfas start with L and Phalathes start with U
 
 
 # join data
@@ -137,6 +137,18 @@ apply(Z_na, 2, sum)
 # X_na %>% as.matrix() %>% image()
 # Z_na %>% as.matrix() %>% image()
 
+
+# LOD
+lod =  X %>% apply(., 2, function(x) min(x, na.rm = T))
+chem_lod = X %>% apply(., 2, function(x) min(x, na.rm = T)) %>%
+   rep(., times = nrow(X)) %>%
+   matrix(., nrow = nrow(X), byrow = T)
+X_lod = X
+X_lod[X_na] = max(X, na.rm = T)
+df_lod = (X_lod == chem_lod) %>% as.matrix() 
+# df_lod %>% as.matrix() %>% image()
+mean(df_lod)
+
 # impute the mean for chol, albuminum and creatinine
 n = nrow(Z)
 mean_Z = apply(Z, 2, function(x) mean(x,na.rm = T))
@@ -157,7 +169,7 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
          panel.border = element_blank(),
          panel.background = element_blank(),
          axis.ticks = element_blank(),
-         axis.text = element_blank(),
+         #axis.text = element_blank(),
          axis.text.x = element_text(angle = 90, hjust = 1),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
@@ -253,10 +265,10 @@ W_imputed = W_imputed %>% as.matrix()
 
 hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
 Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
-#RAMP = quiet(RAMP_fct(y,W_imputed))
-PIE = quiet(PIE_fct(y,W_imputed))
+RAMP = quiet(RAMP_fct(y,W_imputed))
+#PIE = quiet(PIE_fct(y,W_imputed))
 PIE = RAMP
-RAMP = hiernet
+#RAMP = hiernet
 # hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
 # Family = quiet(FAMILY_fct(y,W,W_test,y_test))
 # RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
@@ -265,13 +277,10 @@ RAMP = hiernet
 
 # --- Compute errors --- #
 errors = compute_errors_data(hiernet,Family,RAMP,RAMP,
-                             y = y,y_test = y,X_test = W_imputed,Z_test = Z_imputed,
-                             gibbs)
+                             y = y,y_test = y,X_test = W_imputed,Z_test = Z_imputed)
 
-y_hat = X%*%beta_hat + 
-   as.vector(diag(X%*%Omega_hat%*%t(X))) +
-   alpha_hat + Z%*%beta_Z_hat +
-   as.vector(diag(X%*%Phi_hat%*%t(Z)))
+y_hat = gibbs$y_pred %>% apply(. , 2, mean)
+(y - y_hat) %>% .^2 %>% mean()
 
 
 # --- non zero interactions --- #
@@ -449,7 +458,7 @@ ggplot(beta_plot, aes(x = Variables, y = Values, color = model,
          #legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
-   ggtitle(TeX("Estimated Main Effects"))+
+   ggtitle("Estimated Main Effects")+
    geom_errorbar(aes(ymin=q_inf, ymax=q_sup), width=.1)
 
 
