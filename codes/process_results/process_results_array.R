@@ -9,8 +9,8 @@ library(plotly)
 # mv n500_p25_sigmasq1_corr_notsparse_* n500_p25_sigmasq1_corr_notsparse/
 
 
-folder = "n500_p50_sigmasq1_ind_sparse"
-file_name = "n500_p50_sigmasq1_ind_sparse"
+folder = "n500_p25_sigmasq1_ind_sparse"
+file_name = "n500_p25_sigmasq1_ind_sparse"
 
 
 # create matrices for results
@@ -19,12 +19,13 @@ col_names = c("hiernet","Family","PIE","RAMP","FIN")
 colnames(FR) = col_names
 TP_main = TN_main = TP_int = TN_int = 
    MSE_beta = err_pred = err_train = FR
+cov_pred = bias_pred = numeric(50)
 zeros = c()
 for(i in 1:50){
-   out = paste("~/factor_interactions/results/array_jobs/",folder,
+   out = paste("~/factor_interactions/results/array_jobs_cov/",folder,
                "/",folder,"_iter=",
                i,".rds", sep = "")
-   out = paste("~/factor_interactions/results/array_jobs/",folder,
+   out = paste("~/factor_interactions/results/array_jobs_cov/",folder,
                "/",file_name,"_iter=",
                i,".rds", sep = "")
    
@@ -39,6 +40,9 @@ for(i in 1:50){
       err_pred[i,] = results_curr$err_pred[1:5]
       err_train[i,] = results_curr$err_test[1:5]
       FR[i,] = results_curr$FR[1:5]
+      cov_pred[i] = results_curr$coverage_pred
+      bias_pred[i] = results_curr$bias_pred
+      
       
    }else{
       zeros = c(zeros,i)
@@ -63,6 +67,9 @@ results = list(TP_main = TP_main, TN_main = TN_main,
 source("~/factor_interactions/codes/process_results/return_G.R")
 G = return_G(results)
 G
+
+cov_pred %>% mean()
+bias_pred %>% mean()
 
 
 

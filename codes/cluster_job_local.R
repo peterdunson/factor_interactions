@@ -28,14 +28,14 @@ sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
 exists("generate_indep_model_notsparse")
 
 
-n = 200; p = 10
+n = 500; p = 50
 # if type_model = 0 --> indep model; othw factor model with high correlation
 # if sparse = 0 --> not sparse Omega; othw sparse omega
-type_model = 2; sparse = 1
+type_model = 2; sparse = 0
 # number of true factors in correlated model
-k_true = 10
+k_true = 17
 # noise in the model
-sigmasq = 0.25  
+sigmasq = 1
 
 if(type_model == 0){
    if(sparse == 0){
@@ -109,8 +109,8 @@ y_test = data$y_test
 X_test = data$X_test
 
 #Factor models
-nrun = 1000
-burn = 500
+nrun = 2000
+burn = 1500
 thin = 5
 
 
@@ -118,7 +118,7 @@ thin = 5
 eig_values = eigen(cor(X))$values
 plot(eig_values)
 
-k_start = 6
+k_start = 35
 # gibbs_DL_k = gibbs_DL(
 #    y,
 #    X ,
@@ -144,6 +144,12 @@ gibbs_DL_P = gibbs_DL_Plam(
 )
 gibbs_DL_k = gibbs_DL_P
 
+
+# Coverage
+cov_y = coverage_y(y_test, X_test, gibbs_DL_P)
+cov_y
+bias_pred = cov_y$bias
+coverage_pred = cov_y$coverage
 
 
 
@@ -182,4 +188,4 @@ library(beepr)
 beep()
 Sys.sleep(1)
 beep()
-
+cov_y
