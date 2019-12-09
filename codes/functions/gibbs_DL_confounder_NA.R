@@ -179,14 +179,14 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
       sigmasq_y = 1/rgamma(1,an,bn)
       
       # --- Update Lambda --- #
-      Plam = psijh*(phijh^2)*matrix(rep(tau^2,k),p,k,byrow=F)
+      Plam = 1/psijh*(phijh^2)*matrix(rep(tau^2,k),p,k,byrow=F)
       #Plam = matrix(100,p,k)
       eta2 = eta.T%*%eta
       zlams = rnorm(k*p)       # generate normal draws all at once 
       Lambda.T = t(Lambda)
       
       for(j in 1:p) {
-         Llamt = chol(diag(1/Plam[j,]) + ps[j]*eta2)
+         #Llamt = chol(diag(1/Plam[j,]) + ps[j]*eta2)
          Lambda[j,] = t(solve(Llamt,
                               zlams[1:k + (j-1)*k]) + 
                            solve(Llamt,

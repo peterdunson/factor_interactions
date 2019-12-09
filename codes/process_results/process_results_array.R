@@ -9,8 +9,8 @@ library(plotly)
 # mv n500_p25_sigmasq1_corr_notsparse_* n500_p25_sigmasq1_corr_notsparse/
 
 
-folder = "n500_p25_sigmasq1_corr_notsparse"
-file_name = "n500_p25_sigmasq1_corr_notsparse"
+folder = "n500_p50_sigmasq1_ind_notsparse_1"
+file_name = "n500_p50_sigmasq1_ind_notsparse"
 
 # create matrices for results
 FR = matrix(0,nrow = 50, ncol = 5)
@@ -65,7 +65,7 @@ results = list(TP_main = TP_main, TN_main = TN_main,
 
 source("~/factor_interactions/codes/process_results/return_G.R")
 G = return_G(results)
-
+G
 
 G3 = G
 
