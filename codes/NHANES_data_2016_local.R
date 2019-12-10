@@ -7,6 +7,7 @@ library(hierNet)
 library(FAMILY)
 library(GIGrvg)
 library(R.utils)
+library(naniar)
 library(plyr)
 
 ##### Source Functions from local git repo #####
@@ -136,7 +137,9 @@ apply(X_na, 2, sum)
 apply(Z_na, 2, sum)
 # X_na %>% as.matrix() %>% image()
 # Z_na %>% as.matrix() %>% image()
-
+X_visNA = X[,c(19:28,15:18,1:14)]
+visdat::vis_miss(X_visNA, warn_large_data = F)+
+   theme(plot.margin=unit(c(1,3.5,2,2),"cm"))
 
 # LOD
 lod =  X %>% apply(., 2, function(x) min(x, na.rm = T))
