@@ -107,7 +107,8 @@ df = df[-ind_na,]
 y = df$BMXBMI
 X = df %>% dplyr::select(. , chem_names) %>% 
    transmute(
-      cobalt = LBXBCO,copper_serum = LBXSCU,selenium_serum = LBXSSE,
+      cobalt = LBXBCO,copper_serum = LBXSCU,
+      #selenium_serum = LBXSSE,
       zinc_serum = LBXSZN, lead_blood = LBXBPB, selenium_blood = LBXBSE,
       manganese_blood = LBXBMN, barium_urine = URXUBA, cobalt_urine = URXUCO,
       cesium_urine = URXUCS,molybdenum_urine = URXUMO,lead_urine = URXUPB,
@@ -118,8 +119,7 @@ X = df %>% dplyr::select(. , chem_names) %>%
       mhibp = URXHIBP, mono_n_butyl = URXMBP, mono_ethyl = URXMEP,
       mono_2_ethyl_5_hydroxyhexyl = URXMHH, mono_isobutyl = URXMIB,
       mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
-   ) %>%
-   select(- selenium_serum)
+   ) 
 
 Z = df %>% 
    dplyr::select(. , col_Z) %>% 
