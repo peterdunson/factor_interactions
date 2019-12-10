@@ -1,16 +1,35 @@
 #### Data analysis ####
+
+#### Load Libraries #####
 library(tidyverse)
 library(plyr)
+library(mvtnorm)
+library(MASS)
+library(beepr)
+library(psych)
+library(bayesSurv)
+library('PIE')
+library('glmnet')
+library(RAMP)
+library(hierNet)
+library(FAMILY)
+library(RCurl)
+library(stargazer)
+library(R.utils)
+library(GIGrvg)
+library(coda)
 
 # load data
 load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
 load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
 load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
 load(file = "/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData")
-# load(file = "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/functions")
+sourceDirectory("/work/sta790/ff31/factor_interactions/codes/generate_data")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/compute_errors.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/rate_recovery.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_int.R")
+source("/work/sta790/ff31/factor_interactions/codes/process_results/coverage_y.R")
 
 # log trasform chemicals
 # metals
