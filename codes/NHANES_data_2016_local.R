@@ -156,6 +156,7 @@ Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
 Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 Z_imputed = Z_imputed %>% scale() %>% as.matrix()
 
+
 ## Correlation plot
 Cor_plot = cor(X %>% as.matrix(),use = "pairwise.complete.obs")
 colnames(Cor_plot) = rownames(Cor_plot) = colnames(X)
@@ -174,7 +175,57 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
-   ggtitle("Correlation Outcomes")
+   ggtitle("Correlation Chemicals") + 
+   scale_y_discrete(limits = rev(levels(Cor_plot$Var2))) 
+
+
+## Correlation plot BRACES
+
+bracketsGrob <- function(...){
+   l <- list(...)
+   e <- new.env()
+   e$l <- l
+   grid:::recordGrob(  {
+      do.call(grid.brackets, l)
+   }, e)
+}
+#?grid.brackets
+b1 <- bracketsGrob(x1 = 0.03, y1 = 0.035, x2 = 0.03,y2 = 0.355, h=0.01, lwd=2, col="black")
+b2 <- bracketsGrob(x1 = 0.03, y1 = 0.355, x2 = 0.03,y2 = 0.483, h=0.01, lwd=2, col="black")
+b3 <- bracketsGrob(x1 = - 0.05, y1 = 0.483, x2 = - 0.05,y2 = 0.93, h=0.01, lwd=2, col="black")
+b4 <- bracketsGrob(x1 =  0.03, y1 = 0.483, x2 =  0.03,y2 = 0.74, h=0.01, lwd=2, col="black")
+
+Cor_plot = cor(X %>% as.matrix(),use = "pairwise.complete.obs")
+colnames(Cor_plot) = rownames(Cor_plot) = colnames(X)
+Cor_plot = melt(Cor_plot)
+ggplot(Cor_plot, aes(x = Var2, y = Var1)) + 
+   geom_tile(aes(fill=value), colour="grey20") + 
+   scale_fill_gradient2(low = "#191970", high = "#006400", mid = "white") +
+   theme(axis.title.x = element_blank(),
+         axis.title.y = element_blank(),
+         panel.grid.major = element_blank(),
+         panel.border = element_blank(),
+         panel.background = element_blank(),
+         axis.text = element_blank(),
+         #axis.text.x = element_text(angle = 90, hjust = 1, colour = "white"),
+         #axis.text.y = element_text(hjust = 1, colour = "white"),
+         axis.ticks = element_blank(),
+         axis.ticks.length = unit(.85, "cm"),
+         legend.title = element_text(),
+         plot.title = element_text(hjust = 0.5)) + 
+   labs(fill = " ") + 
+   ggtitle("Correlation Chemicals") + 
+   scale_y_discrete(limits = rev(levels(Cor_plot$Var2))) + 
+   annotation_custom(b1)+
+   annotation_custom(b2)+
+   annotation_custom(b3)+
+   annotation_custom(b4)+
+   scale_x_discrete("",breaks=c(1,4),labels=c("Low types","High types") ) + 
+   annotate("text", x=-1, y = 5, label= "phthalates",angle = 90)+
+   annotate("text", x=-1, y = 12.5, label= "pfas",angle = 90)+
+   annotate("text", x=-3.5, y = 21.5, label= "metals",angle = 90)+
+   annotate("text", x=-1, y = 19, label= "metals urine",angle = 90)+
+   coord_cartesian(ylim=c(0,30),xlim=c(0,30), clip="off")
 
 
 # Eigen values
