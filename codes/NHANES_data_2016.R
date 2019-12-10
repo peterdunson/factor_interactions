@@ -133,11 +133,36 @@ Z_pred = matrix(mean_Z, ncol = ncol(Z), nrow = n, byrow = T)
 Z_imputed = Z; Z_imputed[Z_na] = Z_pred[Z_na]
 Z_imputed = Z_imputed %>% scale() %>% as.matrix()
 
-source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
+# Run competitors
+set.seed(1)
+ind = sample(1:n,500)
+W_imputed = readRDS("/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
+W_train = W_imputed[-ind,]; y_train = y[-ind,]
+W_test = W_imputed[ind,]; y_test = y[-ind,]
 
-gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
-                       nrun = 100,burn = 50, k = 13)
+hiernet = quiet(Hiernet_fct(as.numeric(y_train),W_train,W_test, y_test))
+Family = quiet(FAMILY_fct(as.vector(y_train),W_train,W_test, y_test))
+RAMP = quiet(RAMP_fct(y_train,W_train,W_test, y_test))
+PIE = quiet(PIE_fct(y_train,W_train,W_test, y_test))
+
+# save
+list_comp = list(hiernet = hiernet,
+                 Family = Family,
+                 RAMP = RAMP,
+                 PIE = PIE)
+print("finish competitors")
 results_dir = "/work/sta790/ff31/factor_interactions/"
+saveRDS(list_comp,   file.path(results_dir, "competitors.rds"))
+
+
+
+# source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA.R")
+# gibbs = gibbs_DL_confounder_NA(y, X, X_na, Z_imputed,
+#                        nrun = 5000,burn = 4500, k = 13)
+source("/work/sta790/ff31/factor_interactions/codes/functions/gibbs_DL_confounder_NA_test.R")
+gibbs = gibbs_DL_confounder_NA_test(y, X, X_na, Z_imputed,ind,
+                       nrun = 5000,burn = 4500, k = 13)
+
 saveRDS(gibbs,   file.path(results_dir, "metals_pfas_plam.rds"))
 print("saved?")
 

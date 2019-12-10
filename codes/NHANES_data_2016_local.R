@@ -257,10 +257,10 @@ plot(gibbs$Omega_conf[,1,2],ty="l")
 plot(gibbs$Omega_conf[,1,4],ty="l")
 
 # --- plot omega_hat --- #
-cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_bayes)
+cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_bayes,inf = 0.005,sup = 0.995)
 p = ncol(X)
 Omega_plot = matrix(0,p,p);
-ind = which(cov[[2]] ==1 )
+ind = which(cov[[2]] ==1)
 Omega_plot[ind] = Omega_hat[ind]
 colnames(Omega_plot) = rownames(Omega_plot) = colnames(X)
 Omega_plot = Omega_plot[1:(p-2),1:(p-2)]
@@ -277,17 +277,20 @@ ggplot(Omega_plot, aes(x = Var2, y = Var1)) +
          panel.background = element_blank(),
          axis.ticks = element_blank(),
          #axis.text = element_blank(),
-         axis.text.x = element_text(angle = 90, hjust = 1),
+         axis.text.x = element_text(angle = 45, hjust = 1),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
-   ggtitle(TeX("Interactions Chemicals"))
+   ggtitle(TeX("Interactions Chemicals")) + 
+   scale_y_discrete(limits = rev(levels(Omega_plot$Var2)))
+
 
 
 # --- plot Phi_hat --- #
-cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_conf)
-#Phi_plot = matrix(0,p,ncol(Phi_hat)); 
-Phi_plot = Phi_hat
+cov = coverage_int(gibbs$beta_bayes,gibbs$Omega_conf,inf = 0.005,sup = 0.995)
+Phi_plot = matrix(0,p,ncol(Phi_hat)); 
+ind = which(cov[[2]] ==1)
+Phi_plot[ind] = Phi_hat[ind]
 rownames(Phi_plot) = colnames(X)
 colnames(Phi_plot) = colnames(Z)
 #Phi_plot[cov[[2]]] = Phi_plot[cov[[2]]]
@@ -306,7 +309,8 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") +
-   ggtitle(TeX("Interactions X-Z"))
+   ggtitle(TeX("Interactions Chemicals-Covariates"))+ 
+   scale_y_discrete(limits = rev(levels(Phi_plot$Var1)))
 
 # --- Competitors --- #
 library(mice)
@@ -316,6 +320,8 @@ W = cbind(X,Z_imputed)
 W_imputed = mice(W,m=1,maxit=50,meth='pmm',seed=500)
 W_imputed = complete(W_imputed,1) 
 W_imputed = W_imputed %>% as.matrix()
+saveRDS(W_imputed,
+        "/Users/felpo/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
 
 hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
 Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
@@ -413,7 +419,8 @@ ggplot(ggdf, aes(x = Var2, y = Var1)) +
          #axis.text = element_blank(),
          legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
-   labs(fill = " ")
+   labs(fill = " ")+ 
+   scale_y_discrete(limits = rev(levels(ProcessMean$Var1)))
 
 
 # --- GIF lambda --- #

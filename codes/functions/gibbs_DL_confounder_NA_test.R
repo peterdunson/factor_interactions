@@ -15,10 +15,11 @@ library(GIGrvg)
 library(statmod)
 library(MCMCpack)
 
-gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1, 
-                               delta_rw = 0.2, epsilon_rw = 0.5,
-                               a = 1/2, k = NULL){
+gibbs_DL_confounder_NA_test = function(y, X, X_na, Z, ind_test, nrun, burn, thin = 1, 
+                                  delta_rw = 0.2, epsilon_rw = 0.5,
+                                  a = 1/2, k = NULL){
    n = nrow(X)
+   n_test = length(ind_test)
    p = ncol(X)                    # collect data attributes
    l = ncol(Z)
    
@@ -35,6 +36,17 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    # prepare data matrix
    X = as.matrix(scale(X))
    Z = as.matrix(scale(Z))
+   
+   
+   # test train
+   X_test = X[ind_test,]
+   Z_test = Z[ind_test,]
+   X_na_test = X_na[ind_test,]
+   
+   X = X[-ind_test,]
+   Z = Z[-ind_test,]
+   X_na = X_na[-ind_test,]
+   y = y[-ind_test]
    Z.T = t(Z)
    
    sp = floor((nrun - burn)/thin)
@@ -62,7 +74,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    beta_Z_bayes = matrix(0,sp,l)
    phi_st = array(0,c(sp,k))
    Psi_st = array(0,c(sp,k,k))
-   y_pred_st = array(0,c(sp,n))
+   y_pred_st = array(0,c(sp,n_test))
    acp = numeric(n)
    
    sigmasq_y = 1                 # initial values
@@ -74,6 +86,7 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    Lambda = matrix(0,p,k)
    Lambda.T = t(Lambda)
    eta = matrix(rnorm(n*k),n,k)
+   eta_test = matrix(rnorm(n_test*k),n_test,k)
    meta = matrix(0,n,k)
    veta = diag(rep(1,k))
    Psi = matrix(0,k,k)
@@ -95,6 +108,10 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
    for(i in 1:nrun){
       
       # --- Update missing data --- #
+      X_pred_test = eta_test%*%Lambda.T + mvtnorm::rmvnorm(n_test, sigma = Sigma)
+      X_test[X_na_test] = X_pred_test[X_na_test]
+      
+      # --- Update missing data test --- #
       X_pred = eta%*%Lambda.T + mvtnorm::rmvnorm(n, sigma = Sigma)
       X[X_na] = X_pred[X_na]
       
@@ -130,6 +147,14 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
             acp[h] = acp[h] + 1
             
          }
+      }
+      
+      # --- Update eta test --- #
+      for (h in 1:n_test){                
+         V_h = solve(diag(k) + Lambda.T%*%diag(ps)%*%Lambda)
+         eta_test[h,] = bayesSurv::rMVNorm(1,
+                                           V_h%*%Lambda.T%*%diag(ps)%*%X_test[h,],
+                                           V_h)
       }
       
       # --- Update Phi XZ regression --- #
@@ -239,10 +264,10 @@ gibbs_DL_confounder_NA = function(y, X, X_na, Z ,nrun, burn, thin = 1,
          phi_st[count,] = phi
          Lambda_st[count,,] = dsVX %*% Lambda
          
-         y_pred_st[count,] = X%*%beta_bayes[count,] + 
-            as.vector(diag(X%*%Omega_bayes[count,,]%*%t(X))) +
-            alpha_bayes[count] + Z%*%beta_Z_bayes[count,] +
-            as.vector(diag(X%*%Omega_conf[count,,]%*%t(Z)))
+         y_pred_st[count,] = X_test%*%beta_bayes[count,] + 
+            as.vector(diag(X_test%*%Omega_bayes[count,,]%*%t(X_test))) +
+            alpha_bayes[count] + Z_test%*%beta_Z_bayes[count,] +
+            as.vector(diag(X_test%*%Omega_conf[count,,]%*%t(Z_test)))
          
          
          count = count + 1
