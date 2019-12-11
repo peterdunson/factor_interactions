@@ -157,7 +157,7 @@ set.seed(1)
 ind = sample(1:n,500)
 W_imputed = readRDS("/work/sta790/ff31/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
 W_train = W_imputed[-ind,]; y_train = y[-ind,]
-W_test = W_imputed[ind,]; y_test = y[-ind,]
+W_test = W_imputed[ind,]; y_test = y[ind,]
 
 hiernet = quiet(Hiernet_fct(as.numeric(y_train),W_train,W_test, y_test))
 Family = quiet(FAMILY_fct(as.vector(y_train),W_train,W_test, y_test))
