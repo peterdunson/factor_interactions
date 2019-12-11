@@ -48,6 +48,7 @@ gibbs_DL_confounder_NA_test = function(y, X, X_na, Z, ind_test, nrun, burn, thin
    X_na = X_na[-ind_test,]
    y = y[-ind_test]
    Z.T = t(Z)
+   n = nrow(X)
    
    sp = floor((nrun - burn)/thin)
    
