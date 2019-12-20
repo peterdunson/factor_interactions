@@ -40,6 +40,8 @@ df_phalates_pfas_log = df_phalates_pfas %>%
    mutate(SEQN = df_phalates_pfas$SEQN) %>% #so we append new column named SEQN to the end of dataset
    dplyr::select(- "df_phalates_pfas$SEQN")
 
+
+
 # get rid of the metals that do not respect the normality assumption
 # function to plot
 hist_chem = function(df,col_number){
@@ -113,6 +115,11 @@ X = df %>% dplyr::select(. , chem_names) %>%
       mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
    ) %>%
    select(- selenium_serum)
+
+pfas = X %>% select(sm_pfos,n_perfluorooctanoic,n_perfluorooctane,perfluorohexane)
+C_pfas = cor(pfas, use = "pairwise.complete.obs")
+C_pfas[lower.tri(C_pfas)] %>% mean()
+complete.cases(pfas) %>% sum()
 
 Z = df %>% 
    dplyr::select(. , col_Z) %>% 
@@ -317,11 +324,11 @@ library(mice)
 source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
 source("/Users/felpo/factor_interactions/codes/functions/Competitors_fcts.R")
 W = cbind(X,Z_imputed)
-W_imputed = mice(W,m=1,maxit=50,meth='pmm',seed=500)
-W_imputed = complete(W_imputed,1) 
-W_imputed = W_imputed %>% as.matrix()
-saveRDS(W_imputed,
-        "/Users/felpo/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
+# W_imputed = mice(W,m=1,maxit=50,meth='pmm',seed=500)
+# W_imputed = complete(W_imputed,1) 
+# W_imputed = W_imputed %>% as.matrix()
+# saveRDS(W_imputed,
+#         "/Users/felpo/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
 
 hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
 Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
@@ -391,19 +398,28 @@ source("/Users/felpo/factor_interactions/codes/process_results/signer.R")
 source("/Users/felpo/factor_interactions/codes/process_results/permuter.R")
 source("/Users/felpo/factor_interactions/codes/process_results/mcrotfact.R")
 source("/Users/felpo/factor_interactions/codes/process_results/permsignfact.R")
-lambda_sample = gibbs$Lambda[,1:(p-2),]
+source("/Users/felpo/factor_interactions/codes/process_results/spclone.R")
+
+lambda_sample = gibbs$Lambda[,1:p,]
 lambda_sample = lapply(1:500, function(ind) lambda_sample[ind,,])
 sample_mean = reduce(lambda_sample, `+`)/length(lambda_sample)
-rownames(sample_mean) = colnames(X[,1:(p-2)])
+rownames(sample_mean) = colnames(X)
 rotated = mcrotfact(lambda_sample, method = "varimax", file = FALSE)
-aligned = clustalignplus(rotated$samples, itermax = 500)
+
+# ClustAlign
+#aligned = clustalignplus(rotated$samples, itermax = 500)
+
+# MatchAlign
+saveRDS(rotated$samples,"Lambda_sample.rds")
+sprotated = spclone("Lambda_sample.rds", method = "BADFM", maxiter = 100, ncores = 4, tol = 1e-5)
 
 
 label = "Sample Mean"
 SampleMean = cbind(melt(sample_mean), label)
 label = "Aligned Sample Mean"
-ProcessMean = Reduce("+", aligned)/length(aligned)
-rownames(ProcessMean) = colnames(X[,1:(p-2)])
+#ProcessMean = Reduce("+", aligned)/length(aligned)
+ProcessMean = Reduce("+", sprotated$samples)/length(sprotated$samples)
+rownames(ProcessMean) = colnames(X)
 ProcessMean = cbind(melt(ProcessMean), label)
 ggdf = rbind(SampleMean, ProcessMean)
 ggplot(ggdf, aes(x = Var2, y = Var1)) + 
