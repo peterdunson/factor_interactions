@@ -159,19 +159,19 @@ W_imputed = readRDS("/work/sta790/ff31/factor_interactions/data/data_nhanes_15-1
 W_train = W_imputed[-ind,]; y_train = y[-ind,]
 W_test = W_imputed[ind,]; y_test = y[ind,]
 
-hiernet = quiet(Hiernet_fct(as.numeric(y_train),W_train,W_test, y_test))
-Family = quiet(FAMILY_fct(as.vector(y_train),W_train,W_test, y_test))
-RAMP = quiet(RAMP_fct(y_train,W_train,W_test, y_test))
-PIE = quiet(PIE_fct(y_train,W_train,W_test, y_test))
-
-# save
-list_comp = list(hiernet = hiernet,
-                 Family = Family,
-                 RAMP = RAMP,
-                 PIE = PIE)
-print("finish competitors")
-results_dir = "/work/sta790/ff31/factor_interactions/"
-saveRDS(list_comp,   file.path(results_dir, "competitors.rds"))
+# hiernet = quiet(Hiernet_fct(as.numeric(y_train),W_train,W_test, y_test))
+# Family = quiet(FAMILY_fct(as.vector(y_train),W_train,W_test, y_test))
+# RAMP = quiet(RAMP_fct(y_train,W_train,W_test, y_test))
+# PIE = quiet(PIE_fct(y_train,W_train,W_test, y_test))
+# 
+# # save
+# list_comp = list(hiernet = hiernet,
+#                  Family = Family,
+#                  RAMP = RAMP,
+#                  PIE = PIE)
+# print("finish competitors")
+# results_dir = "/work/sta790/ff31/factor_interactions/"
+# saveRDS(list_comp,   file.path(results_dir, "competitors.rds"))
 
 
 
