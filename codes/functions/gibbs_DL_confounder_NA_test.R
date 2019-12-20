@@ -212,7 +212,7 @@ gibbs_DL_confounder_NA_test = function(y, X, X_na, Z, ind_test, nrun, burn, thin
       Lambda.T = t(Lambda)
       
       for(j in 1:p) {
-         #Llamt = chol(diag(1/Plam[j,]) + ps[j]*eta2)
+         Llamt = chol(diag(1/Plam[j,]) + ps[j]*eta2)
          Lambda[j,] = t(solve(Llamt,
                               zlams[1:k + (j-1)*k]) + 
                            solve(Llamt,
