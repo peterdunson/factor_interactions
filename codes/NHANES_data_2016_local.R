@@ -245,7 +245,16 @@ Cor_noNA[ind] = mean(Cor_noNA, na.rm = T)
 eig = eigen(Cor_noNA)
 plot(eig$values)
 
+# Eigen values
+Cor_imp = cor(X_imputed %>% as.matrix(),use = "pairwise.complete.obs")
+ind = is.na(Cor_imp)
+Cor_imp[ind] = mean(Cor_imp, na.rm = T)
+eig = eigen(Cor_imp)
+plot(eig$values)
+cumsum(eig$values)/sum(eig$values)
+
 #### read simulation from cluster ####
+# gibbs = readRDS("~/factor_interactions/metals_pfas.rds")
 gibbs = readRDS("~/factor_interactions/metals_pfas.rds")
 plot(gibbs$alpha_bayes)
 plot(gibbs$beta_bayes[,1])
@@ -330,20 +339,31 @@ W = cbind(X,Z_imputed)
 # saveRDS(W_imputed,
 #         "/Users/felpo/factor_interactions/data/data_nhanes_15-16/data_imputed.rds")
 
-hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
-Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
-RAMP = quiet(RAMP_fct(y,W_imputed))
-#PIE = quiet(PIE_fct(y,W_imputed))
-PIE = RAMP
+# hiernet = quiet(Hiernet_fct(as.numeric(y),W_imputed))
+# Family = quiet(FAMILY_fct(as.vector(y),W_imputed))
+# RAMP = quiet(RAMP_fct(y,W_imputed))
+# PIE = quiet(PIE_fct(y,W_imputed))
+#PIE = RAMP
 #RAMP = hiernet
 # hiernet = quiet(Hiernet_fct(y,W,W_test,y_test))
 # Family = quiet(FAMILY_fct(y,W,W_test,y_test))
 # RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
 # PIE = quiet(PIE_fct(y,X,X_test,y_test))
+X_imputed = mice(X,m=1,maxit=50,meth='pmm',seed=500)
+X_imputed = complete(X_imputed,1) 
+X_imputed = X_imputed %>% as.matrix()
+saveRDS(W_imputed,
+        "/Users/felpo/factor_interactions/data/data_nhanes_15-16/chem_imputed.rds")
+
+competitors = readRDS("~/factor_interactions/competitors.rds")
+PIE = competitors$PIE
+hiernet = competitors$hiernet
+Family = competitors$Family
+RAMP = competitors$RAMP
 
 
 # --- Compute errors --- #
-errors = compute_errors_data(hiernet,Family,RAMP,RAMP,
+errors = compute_errors_data(hiernet,Family,RAMP,PIE,
                              y = y,y_test = y,X_test = W_imputed,Z_test = Z_imputed)
 
 y_hat = gibbs$y_pred %>% apply(. , 2, mean)
@@ -535,7 +555,8 @@ ggplot(beta_plot, aes(x = Variables, y = Values, color = model,
          #legend.title = element_text(),
          plot.title = element_text(hjust = 0.5)) + 
    labs(fill = " ") + 
-   ggtitle("Estimated Main Effects")+
+   ylab("Estimated Main Effects") +
+   # ggtitle("Estimated Main Effects")+
    geom_errorbar(aes(ymin=q_inf, ymax=q_sup), width=.1)
 
 

@@ -108,11 +108,11 @@ gibbs_DL_confounder_NA_test = function(y, X, X_na, Z, ind_test, nrun, burn, thin
    
    for(i in 1:nrun){
       
-      # --- Update missing data --- #
+      # --- Update missing data test --- #
       X_pred_test = eta_test%*%Lambda.T + mvtnorm::rmvnorm(n_test, sigma = Sigma)
       X_test[X_na_test] = X_pred_test[X_na_test]
       
-      # --- Update missing data test --- #
+      # --- Update missing data --- #
       X_pred = eta%*%Lambda.T + mvtnorm::rmvnorm(n, sigma = Sigma)
       X[X_na] = X_pred[X_na]
       
