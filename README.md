@@ -1,3 +1,5 @@
+*A faster implementation of the algorithm is available at https://github.com/poworoznek/infinitefactor and will be soon be available on CRAN*
+
 # Bayesian Factor Analysis for Inference on Interactions
 ## Federico Ferrari, David B Dunson
 
@@ -5,4 +7,3 @@ This article is motivated by the problem of inference on interactions among chem
 
 [Link to manuscript](https://amstat.tandfonline.com/doi/full/10.1080/01621459.2020.1745813#.Xn4EjS2ZNQI)
 
-*A faster implementation of the algorithm is available at https://github.com/poworoznek/infinitefactor and will be soon be available on CRAN*
