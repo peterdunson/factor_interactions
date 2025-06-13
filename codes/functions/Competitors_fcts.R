@@ -1,6 +1,6 @@
 ####### Competitors Functions ######
 library(hierNet)
-library(FAMILY)
+
 library(RAMP)
 library('glmnet')
 
@@ -9,7 +9,7 @@ Hiernet_fct = function(y, X, X_test = X, y_test = y, strong = T){
    n = nrow(X)
    fit=hierNet(X,y,lam=50, strong=strong,
                trace = 0)
-
+   
    #extract main effects and interactions
    beta = fit$bp-fit$bn
    Omega = fit$th
@@ -24,45 +24,7 @@ Hiernet_fct = function(y, X, X_test = X, y_test = y, strong = T){
 }
 
 
-FAMILY_fct = function(y, X, X_test = X, y_test = y,
-                      alphas = c(0.01,0.5,0.99),
-                      lambdas = seq(0.1,1,length = 50)){
-   fit = FAMILY(X, X, y, lambdas ,alphas,
-                quad = TRUE,iter=500, 
-                verbose = F)
-   #Find optimal model with respect to alpha and lambda
-   p = ncol(X)
-   n = nrow(X)
    
-   yhat =  predict(fit, X,X, XequalZ = T)
-   mse = apply(yhat,c(2,3), "-" ,yhat)
-   mse = apply(mse^2,c(2,3),sum)
-   im = which(mse==min(mse),TRUE)
-   
-   #extract coeffs ana main effects
-   coef_FAMILY = coef(fit, XequalZ = T)[[im[2]]][[im[1]]]
-   beta = numeric(p)
-   beta[coef_FAMILY$mains[,1]] = coef_FAMILY$mains[,2]
-   int_Family = coef_FAMILY$interacts
-   Omega = matrix(0,p,p)
-   if(length(int_Family)>0){
-      for(i in 1:nrow(int_Family)){
-         Omega[int_Family[i,1],int_Family[i,2]] = int_Family[i,3]
-      }
-      Omega = (Omega + t(Omega))/2
-   }
-   
-   
-   
-   #prediction
-   y_hat =  predict(fit, X,X, XequalZ = T)
-   err = y-y_hat
-   y_pred = predict(fit, X_test,X_test, XequalZ = T)
-   err_pred = y_test-y_pred
-   
-   return(list(beta = beta,Omega = Omega,
-               err = err,err_pred = err_pred))
-}
 
 
 
@@ -76,7 +38,7 @@ RAMP_fct = function(y, X, X_test = X, y_test = y, hier = "Strong",
    
    p = ncol(X)
    n = nrow(X)
-
+   
    #extract coef
    #beta
    ind_main_eff = fit$mainInd
@@ -108,7 +70,7 @@ RAMP_fct = function(y, X, X_test = X, y_test = y, hier = "Strong",
    err = y-y_hat
    y_pred = predict(fit, X_test)
    err_pred = y_test-y_pred
-
+   
    return(list(beta = beta,Omega = Omega,
                err = err,err_pred = err_pred))
    

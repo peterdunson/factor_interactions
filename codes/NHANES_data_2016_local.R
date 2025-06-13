@@ -4,18 +4,24 @@ library(latex2exp)
 library(glmnet)
 library(RAMP)
 library(hierNet)
-library(FAMILY)
 library(GIGrvg)
 library(R.utils)
 library(naniar)
 library(plyr)
+library(dplyr)
+
+getwd()
+
 
 ##### Source Functions from local git repo #####
 # git clone https://github.com/fedfer/factor_interactions.git
-source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
-sourceDirectory("/Users/felpo/factor_interactions/codes/functions")
-source("/Users/felpo/factor_interactions/codes/process_results/compute_errors.R")
-source("/Users/felpo/factor_interactions/codes/process_results/coverage_int.R")
+repo_path <- "/Users/peterdunson/factor_interactions"
+
+source(paste0(repo_path, "/codes/functions/quiet.R"))
+R.utils::sourceDirectory(paste0(repo_path, "/codes/functions"))
+source(paste0(repo_path, "/codes/process_results/compute_errors.R"))
+source(paste0(repo_path, "/codes/process_results/coverage_int.R"))
+
 
 
 #### Read the data in ####
@@ -208,6 +214,8 @@ b4 <- bracketsGrob(x1 =  0.03, y1 = 0.483, x2 =  0.03,y2 = 0.74, h=0.01, lwd=2, 
 Cor_plot = cor(X %>% as.matrix(),use = "pairwise.complete.obs")
 colnames(Cor_plot) = rownames(Cor_plot) = colnames(X)
 Cor_plot = melt(Cor_plot)
+
+
 ggplot(Cor_plot, aes(x = Var2, y = Var1)) + 
    geom_tile(aes(fill=value), colour="grey20") + 
    scale_fill_gradient2(low = "#191970", high = "#006400", mid = "white") +
@@ -226,10 +234,10 @@ ggplot(Cor_plot, aes(x = Var2, y = Var1)) +
    labs(fill = " ") + 
    ggtitle("Correlation Chemicals") + 
    scale_y_discrete(limits = rev(levels(Cor_plot$Var2))) + 
-   annotation_custom(b1)+
-   annotation_custom(b2)+
-   annotation_custom(b3)+
-   annotation_custom(b4)+
+   #annotation_custom(b1)+
+   #annotation_custom(b2)+
+   #annotation_custom(b3)+
+   #annotation_custom(b4)+
    scale_x_discrete("",breaks=c(1,4),labels=c("Low types","High types") ) + 
    annotate("text", x=-1, y = 5, label= "phthalates",angle = 90)+
    annotate("text", x=-1, y = 12.5, label= "pfas",angle = 90)+
@@ -244,6 +252,18 @@ ind = is.na(Cor_noNA)
 Cor_noNA[ind] = mean(Cor_noNA, na.rm = T)
 eig = eigen(Cor_noNA)
 plot(eig$values)
+
+
+
+
+
+#**********************
+library(mice)
+X_imputed = mice(X,m=1,maxit=50,meth='pmm',seed=500)
+X_imputed = complete(X_imputed,1) 
+X_imputed = X_imputed %>% as.matrix()
+
+
 
 # Eigen values
 Cor_imp = cor(X_imputed %>% as.matrix(),use = "pairwise.complete.obs")
@@ -330,8 +350,8 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
 
 # --- Competitors --- #
 library(mice)
-source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
-source("/Users/felpo/factor_interactions/codes/functions/Competitors_fcts.R")
+source("/Users/peterdunson/factor_interactions/codes/functions/quiet.R")
+source("/Users/peterdunson/factor_interactions/codes/functions/Competitors_fcts.R")
 W = cbind(X,Z_imputed)
 # W_imputed = mice(W,m=1,maxit=50,meth='pmm',seed=500)
 # W_imputed = complete(W_imputed,1) 
@@ -349,17 +369,18 @@ W = cbind(X,Z_imputed)
 # Family = quiet(FAMILY_fct(y,W,W_test,y_test))
 # RAMP = quiet(RAMP_fct(y,X,X_test,y_test))
 # PIE = quiet(PIE_fct(y,X,X_test,y_test))
-X_imputed = mice(X,m=1,maxit=50,meth='pmm',seed=500)
-X_imputed = complete(X_imputed,1) 
-X_imputed = X_imputed %>% as.matrix()
+
 saveRDS(W_imputed,
         "/Users/felpo/factor_interactions/data/data_nhanes_15-16/chem_imputed.rds")
+
 
 competitors = readRDS("~/factor_interactions/competitors.rds")
 PIE = competitors$PIE
 hiernet = competitors$hiernet
 Family = competitors$Family
 RAMP = competitors$RAMP
+
+source(paste0(repo_path, "/codes/process_results/compute_errors_data.R"))
 
 
 # --- Compute errors --- #
@@ -414,11 +435,12 @@ ggplot(Phi_plot, aes(x = Var2, y = Var1)) +
 
 
 # --- Postprocessing Lambda --- #
-source("/Users/felpo/factor_interactions/codes/process_results/signer.R")
-source("/Users/felpo/factor_interactions/codes/process_results/permuter.R")
-source("/Users/felpo/factor_interactions/codes/process_results/mcrotfact.R")
-source("/Users/felpo/factor_interactions/codes/process_results/permsignfact.R")
-source("/Users/felpo/factor_interactions/codes/process_results/spclone.R")
+source("/Users/peterdunson/factor_interactions/codes/process_results/signer.R")
+source("/Users/peterdunson/factor_interactions/codes/process_results/permuter.R")
+source("/Users/peterdunson/factor_interactions/codes/process_results/mcrotfact.R")
+source("/Users/peterdunson/factor_interactions/codes/process_results/permsignfact.R")
+source("/Users/peterdunson/factor_interactions/codes/process_results/spclone.R")
+
 
 lambda_sample = gibbs$Lambda[,1:p,]
 lambda_sample = lapply(1:500, function(ind) lambda_sample[ind,,])
@@ -464,10 +486,23 @@ ggplot(ggdf, aes(x = Var2, y = Var1)) +
 #aligned
 factl = array(unlist(lambda_sample), dim = c(11,7,500))
 # factl = array(unlist(aligned), dim = c(11,7,500))
+
+
+library(magick)
+
 img = image_graph(600, 340, res = 96)
+
+
+
+
+
+
+
+#*************
+
 for(i in seq(1,500,by = 5)){
    curr = factl[,,i,  drop = F] / max(factl)
-   rownames(curr) = colnames(X[,1:(p-2)])
+   #rownames(curr) = colnames(X[,1:(p-2)])
    SampleMean = melt(curr)
    plot = ggplot(SampleMean, aes(x = Var2, y = Var1)) + 
       geom_tile(aes(fill=value), colour="grey20") + 
@@ -487,6 +522,8 @@ for(i in seq(1,500,by = 5)){
    #lambda.add =  image_raster(plot)
    #lambda.image =  c(lambda.image, lambda.add)
 }
+
+
 lambda.animated = image_animate(img, fps = 20, dispose = "background")
 image_write(lambda.animated, "Lambda_aligned.gif")
 

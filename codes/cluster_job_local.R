@@ -10,7 +10,6 @@ library('PIE')
 library('glmnet')
 library(RAMP)
 library(hierNet)
-library(FAMILY)
 library(RCurl)
 library(stargazer)
 library(R.utils)
@@ -20,11 +19,13 @@ library(coda)
 
 ##### Source Functions from local git repo #####
 # git clone https://github.com/fedfer/factor_interactions.git
-source("/Users/felpo/factor_interactions/codes/functions/Gibbs_DL.R")
-source("/Users/felpo/factor_interactions/codes/functions/quiet.R")
-sourceDirectory("/Users/felpo/factor_interactions/codes/generate_data")
-sourceDirectory("/Users/felpo/factor_interactions/codes/functions")
-sourceDirectory("/Users/felpo/factor_interactions/codes/post_processing")
+source(file.path(repo_path, "codes/functions/Gibbs_DL.R"))
+source(file.path(repo_path, "codes/functions/quiet.R"))
+
+# Source all scripts in relevant folders
+R.utils::sourceDirectory(file.path(repo_path, "codes/generate_data"))
+R.utils::sourceDirectory(file.path(repo_path, "codes/functions"))
+#R.utils::sourceDirectory(file.path(repo_path, "codes/process_results"))
 exists("generate_indep_model_notsparse")
 
 
@@ -166,10 +167,20 @@ cov_y
 
 # Competitors
 hiernet = quiet(Hiernet_fct(y, X, X_test, y_test))
-Family = quiet(FAMILY_fct(y, X, X_test, y_test))
-# PIE = PIE_fct(y, X, X_test, y_test)
+#Family = quiet(FAMILY_fct(y, X, X_test, y_test))
+#PIE = PIE_fct(y, X, X_test, y_test)
 RAMP = RAMP_fct(y, X, X_test, y_test)
 PIE = RAMP
+Family = RAMP
+
+str(hiernet)
+str(RAMP)
+str(Omega_true)
+str(beta_true)
+str(y)
+str(y_test)
+
+
 
 #Errors
 errors = compute_errors(

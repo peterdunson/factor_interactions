@@ -69,8 +69,8 @@ G
 
 G3 = G
 
-G = rbind(G1,G2,G3)
-stargazer(G[,1:5])
+#G = rbind(G1,G2,G3)
+#stargazer(G[,1:5])
 
 
 
