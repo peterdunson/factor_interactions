@@ -1,10 +1,20 @@
 # -------- Ferrari Workflow With NHANES Data --------
-library(tidyverse)
-library(reshape2)
+library(mvtnorm)
+library(MASS)
+library(beepr)
+library(psych)
+library(bayesSurv)
+library('PIE')
+library('glmnet')
+library(RAMP)
+library(hierNet)
+library(RCurl)
+library(stargazer)
 library(R.utils)
 library(GIGrvg)
-library(hierNet)
-library(RAMP)
+library(coda)
+library(tidyverse)
+library(dplyr)
 # ... Add other necessary libraries here
 
 # ---- Source Functions ----
@@ -13,6 +23,86 @@ source(file.path(repo_path, "codes/functions/Gibbs_DL.R"))
 source(file.path(repo_path, "codes/functions/quiet.R"))
 R.utils::sourceDirectory(file.path(repo_path, "codes/functions"))
 # If you need coverage_y or compute_errors, source them as well
+
+
+
+# ---- Load Libraries ----
+library(tidyverse)
+library(plyr)
+library(mice)
+
+# ---- Set Data Directory ----
+repo_path <- "/Users/peterdunson/factor_interactions"  # adjust as needed
+
+# ---- Load Data ----
+load(file.path(repo_path, "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_cov_1516.RData"))
+load(file.path(repo_path, "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_out_1516.RData"))
+load(file.path(repo_path, "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_metals_1516.RData"))
+load(file.path(repo_path, "data/data_nhanes_15-16/Rdata_nhanes_15-16/nhanes_phalates_pfas_1516.RData"))
+
+# ---- Log-transform Chemicals ----
+df_metals_log <- df_metals %>%
+   dplyr::select(-SEQN) %>%
+   log(., base = 10) %>%
+   cbind(df_metals$SEQN, .) %>%
+   mutate(SEQN = df_metals$SEQN) %>%
+   dplyr::select(-"df_metals$SEQN")
+
+df_phalates_pfas_log <- df_phalates_pfas %>%
+   dplyr::select(-SEQN) %>%
+   log(., base = 10) %>%
+   cbind(df_phalates_pfas$SEQN, .) %>%
+   mutate(SEQN = df_phalates_pfas$SEQN) %>%
+   dplyr::select(-"df_phalates_pfas$SEQN")
+
+# ---- Remove Non-normal Metals ----
+df_metals_log_norm <- df_metals_log %>%
+   dplyr::select(-c(LBXBCD, LBXBCR, LBXBGE, LBXBGM, LBXIHG, LBXTHG, URXUHG,
+                    URXUCD, URXUMN, URXUSB, URXUAB, URXUAC, URXUAS3, URXUAS5,
+                    URXUDMA, URXUMMA, URXUUR, URXUTU))
+
+# ---- Select Normalized Phalates/PFAS ----
+df_phalates_pfas_log_norm <- df_phalates_pfas_log %>%
+   dplyr::select(c(LBXMFOS, LBXNFOA, LBXNFOS, LBXPFHS,
+                   URXCNP, URXCOP, URXECP, URXHIBP, URXMBP, URXMEP,
+                   URXMHH, URXMIB, URXMOH, URXMZP, SEQN))
+
+# ---- Assemble Final Dataframe ----
+chem_names <- c(colnames(df_metals_log_norm), colnames(df_phalates_pfas_log_norm))
+df_out_analysis <- df_out %>% dplyr::select(SEQN, BMXBMI)
+df <- join_all(list(df_cov, df_out_analysis, df_metals_log_norm, df_phalates_pfas_log_norm),
+               by = 'SEQN', type = 'full')
+
+# ---- Remove Rows With Missing Outcome ----
+df <- df[!is.na(df$BMXBMI), ]
+
+# ---- Create Design Matrix (Chemicals) ----
+X <- df %>% dplyr::select(all_of(chem_names)) %>%
+   transmute(
+      cobalt = LBXBCO, copper_serum = LBXSCU, selenium_serum = LBXSSE,
+      zinc_serum = LBXSZN, lead_blood = LBXBPB, selenium_blood = LBXBSE,
+      manganese_blood = LBXBMN, barium_urine = URXUBA, cobalt_urine = URXUCO,
+      cesium_urine = URXUCS, molybdenum_urine = URXUMO, lead_urine = URXUPB,
+      tin_urine = URXUSN, strontium_urine = URXUSR, thallium_urine = URXUTL,
+      sm_pfos = LBXMFOS, n_perfluorooctanoic = LBXNFOA, n_perfluorooctane = LBXNFOS,
+      perfluorohexane = LBXPFHS, mono_carboxyisononyl = URXCNP,
+      mono_carboxyisoctyl = URXCOP, mono_2_ethyl_5_carboxypentyl = URXECP,
+      mhibp = URXHIBP, mono_n_butyl = URXMBP, mono_ethyl = URXMEP,
+      mono_2_ethyl_5_hydroxyhexyl = URXMHH, mono_isobutyl = URXMIB,
+      mono_2_ethyl_5_oxohexyl = URXMOH, mono_benzyl = URXMZP
+   ) %>%
+   select(-selenium_serum) # Exclude for exact match to Ferrari
+
+# ---- Remove Rows Missing All Chemicals ----
+X_na <- is.na(X)
+ind_na_all <- which(apply(X_na, 1, mean) == 1)
+X <- X[-ind_na_all, ] %>% scale() %>% as.data.frame()
+y <- df$BMXBMI[-ind_na_all] %>% scale() %>% as.numeric()
+
+# At this point:
+#   X = scaled chemicals, as data.frame or matrix
+#   y = scaled BMI
+
 
 # ---- Load and Prepare NHANES Data (as before) ----
 # ... Use your processing code to get X and y ...
@@ -25,7 +115,7 @@ y <- as.numeric(y)
 # ---- Split Into Train/Test Sets ----
 set.seed(2024)
 n <- nrow(X)
-test_prop <- 0.3
+test_prop <- 0.2
 test_ind <- sample(seq_len(n), size = floor(test_prop * n))
 X_train <- X[-test_ind, ]
 y_train <- y[-test_ind]
