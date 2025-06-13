@@ -1,4 +1,5 @@
-*A faster implementation of the algorithm is available at https://github.com/poworoznek/infinitefactor and will be soon be available on CRAN*
+Reproducing the results found in **Bayesian Factor Analysis for Inference on Interactions**
+
 
 # Bayesian Factor Analysis for Inference on Interactions
 ## Federico Ferrari, David B Dunson
